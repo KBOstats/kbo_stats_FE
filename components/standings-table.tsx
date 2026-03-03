@@ -33,8 +33,8 @@ export function StandingsTable({
             <TableHead className="w-10 text-center text-xs text-muted-foreground">#</TableHead>
             <TableHead className="text-xs text-muted-foreground">Team</TableHead>
             <TableHead className="text-center text-xs text-muted-foreground">W</TableHead>
-            <TableHead className="text-center text-xs text-muted-foreground">L</TableHead>
             <TableHead className="text-center text-xs text-muted-foreground">D</TableHead>
+            <TableHead className="text-center text-xs text-muted-foreground">L</TableHead>
             <TableHead className="text-center text-xs text-muted-foreground">PCT</TableHead>
             <TableHead className="text-center text-xs text-muted-foreground">GB</TableHead>
             <TableHead className="hidden text-center text-xs text-muted-foreground sm:table-cell">Streak</TableHead>
@@ -47,8 +47,8 @@ export function StandingsTable({
               <TableCell className="text-center text-xs font-mono text-muted-foreground">{team.rank}</TableCell>
               <TableCell className="text-sm font-medium text-foreground">{team.team}</TableCell>
               <TableCell className="text-center text-sm font-mono text-foreground">{team.wins}</TableCell>
-              <TableCell className="text-center text-sm font-mono text-foreground">{team.losses}</TableCell>
               <TableCell className="text-center text-sm font-mono text-muted-foreground">{team.draws}</TableCell>
+              <TableCell className="text-center text-sm font-mono text-foreground">{team.losses}</TableCell>
               <TableCell className="text-center text-sm font-mono font-semibold text-foreground">
                 {typeof team.win_pct === "number" ? team.win_pct.toFixed(3) : team.win_pct}
               </TableCell>
