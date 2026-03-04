@@ -21,8 +21,8 @@ export const metadata: Metadata = {
         media: '(prefers-color-scheme: dark)',
       },
       {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
+        url: '/icon.png',
+        type: 'image/png',
       },
     ],
     apple: '/apple-icon.png',
@@ -34,6 +34,8 @@ export const viewport: Viewport = {
   userScalable: true,
 }
 
+import { Providers } from "@/components/providers"
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -42,7 +44,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="font-sans antialiased">
-        {children}
+        <Providers>
+          {children}
+        </Providers>
         <Analytics />
       </body>
     </html>
