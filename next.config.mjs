@@ -11,6 +11,11 @@ const nextConfig = {
     buildActivity: false,
     buildActivityPosition: 'bottom-right',
   },
+  experimental: {
+    turbo: {
+      root: import.meta.dirname,
+    },
+  },
 }
 
 export default nextConfig

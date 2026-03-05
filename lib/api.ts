@@ -1,9 +1,5 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
-if (!API_BASE_URL) {
-  throw new Error("NEXT_PUBLIC_API_BASE_URL is not set")
-}
-
 type QueryValue = string | number | boolean | null | undefined
 
 function buildQuery(params?: Record<string, QueryValue>) {
@@ -24,7 +20,9 @@ export async function fetchJson<T>(
   params?: Record<string, QueryValue>,
   init?: RequestInit
 ): Promise<T> {
-  const url = `${API_BASE_URL}${path}${buildQuery(params)}`
+  const normalizedPath = path.endsWith('/') ? path : `${path}/`
+  const resolvedBaseUrl = resolveApiBaseUrl()
+  const url = `${resolvedBaseUrl}${normalizedPath}${buildQuery(params)}`
   const res = await fetch(url, {
     ...init,
     headers: {
@@ -40,4 +38,14 @@ export async function fetchJson<T>(
   }
 
   return (await res.json()) as T
+}
+
+function resolveApiBaseUrl() {
+  // Browser runtime: always hit Next.js proxy first to avoid CORS/host mismatches.
+  if (typeof window !== "undefined") {
+    return "/api"
+  }
+
+  // Server runtime fallback (for SSR and build-time execution).
+  return (API_BASE_URL || "http://127.0.0.1:8000/api").replace(/\/$/, "")
 }
