@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { fetchJson } from "@/lib/api"
 import { topPitchers } from "@/lib/mock-data"
+import { useLang, tr } from "@/components/lang-context"
 
 type ViewMode = "card" | "table"
 type TeamFilter = "all" | string
@@ -57,10 +58,22 @@ function formatMetric(value: number, metric: string) {
   return String(Math.round(Number(value || 0)))
 }
 
+function getDefaultSeasonByKstDate() {
+  const seasonStart = "2026-03-28"
+  const todayKst = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date())
+  return todayKst >= seasonStart ? "2026" : "2025"
+}
+
 export default function PlayersPage() {
+  const { lang } = useLang()
   const [search, setSearch] = useState("")
   const [teamFilter, setTeamFilter] = useState<TeamFilter>("all")
-  const [season, setSeason] = useState("2025")
+  const [season, setSeason] = useState(getDefaultSeasonByKstDate)
   const [viewMode, setViewMode] = useState<ViewMode>("table")
   const [hitterSort, setHitterSort] = useState<string>("OPS")
   const [pitcherSort, setPitcherSort] = useState<string>("ERA")
@@ -109,8 +122,8 @@ export default function PlayersPage() {
       <main className="mx-auto max-w-7xl px-4 py-6">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Players</h1>
-            <p className="mt-1 text-sm text-muted-foreground">KBO 타자/투수 기록을 시즌별로 확인합니다.</p>
+            <h1 className="text-2xl font-bold text-foreground">{tr("players.title", lang)}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">{tr("players.subtitle", lang)}</p>
             {leaderboardData?.mode === "PRESEASON_FALLBACK" && (
               <p className="mt-1 text-xs text-amber-500">
                 요청 시즌 {leaderboardData.requested_season} 데이터가 없어 {leaderboardData.effective_season} 시즌을 표시 중입니다.
@@ -133,7 +146,7 @@ export default function PlayersPage() {
             <div className="hidden items-center gap-2 sm:flex">
               <Switch checked={showRegulation} onCheckedChange={setShowRegulation} id="regulation" />
               <label htmlFor="regulation" className="cursor-pointer whitespace-nowrap text-xs text-muted-foreground">
-                규정타석
+                {tr("players.regulation", lang)}
               </label>
             </div>
 
@@ -165,7 +178,7 @@ export default function PlayersPage() {
             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
-              placeholder="선수명 또는 팀 검색"
+              placeholder={tr("players.searchPlaceholder", lang)}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-9 w-full rounded-lg border border-border bg-secondary py-0 pr-3 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
@@ -177,7 +190,7 @@ export default function PlayersPage() {
             onChange={(e) => setTeamFilter(e.target.value)}
             className="h-9 rounded-lg border border-border bg-secondary px-3 text-xs text-foreground focus:border-primary focus:outline-none"
           >
-            <option value="all">All Teams</option>
+            <option value="all">{tr("players.allTeams", lang)}</option>
             {TEAM_OPTIONS.map((team) => (
               <option key={team} value={team}>
                 {team}
@@ -188,8 +201,8 @@ export default function PlayersPage() {
 
         <Tabs defaultValue="hitters">
           <TabsList className="bg-secondary">
-            <TabsTrigger value="hitters">Hitters</TabsTrigger>
-            <TabsTrigger value="pitchers">Pitchers</TabsTrigger>
+            <TabsTrigger value="hitters">{tr("players.hitters", lang)}</TabsTrigger>
+            <TabsTrigger value="pitchers">{tr("players.pitchers", lang)}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="hitters" className="mt-4">
@@ -284,6 +297,28 @@ export default function PlayersPage() {
 }
 
 function HitterTable({ hitters, sortField, season }: { hitters: HitterRow[]; sortField: string; season: string }) {
+  // 모든 stat 컬럼 정의 (고정 앞 컬럼 제외)
+  const ALL_STAT_COLS: { key: keyof HitterRow; label: string; decimal?: boolean }[] = [
+    { key: "AVG", label: "AVG", decimal: true },
+    { key: "HR", label: "HR" },
+    { key: "RBI", label: "RBI" },
+    { key: "OBP", label: "OBP", decimal: true },
+    { key: "SLG", label: "SLG", decimal: true },
+    { key: "OPS", label: "OPS", decimal: true },
+    { key: "H", label: "H" },
+    { key: "games", label: "G" },
+    { key: "PA", label: "PA" },
+    { key: "AB", label: "AB" },
+  ]
+
+  // 선택한 sortField를 맨 앞으로 이동
+  const orderedCols = [...ALL_STAT_COLS]
+  const sortIdx = orderedCols.findIndex((c) => c.key === sortField)
+  if (sortIdx > 0) {
+    const [moved] = orderedCols.splice(sortIdx, 1)
+    orderedCols.unshift(moved)
+  }
+
   return (
     <div className="overflow-x-auto rounded-lg border border-border bg-card">
       <Table>
@@ -292,14 +327,14 @@ function HitterTable({ hitters, sortField, season }: { hitters: HitterRow[]; sor
             <TableHead className="w-10 text-center text-xs">#</TableHead>
             <TableHead className="text-xs">선수</TableHead>
             <TableHead className="text-xs">팀</TableHead>
-            <TableHead className="text-center text-xs">G</TableHead>
-            <TableHead className="text-center text-xs">PA</TableHead>
-            <TableHead className="text-center text-xs">AVG</TableHead>
-            <TableHead className="text-center text-xs">HR</TableHead>
-            <TableHead className="text-center text-xs">RBI</TableHead>
-            <TableHead className="text-center text-xs">OBP</TableHead>
-            <TableHead className="text-center text-xs">SLG</TableHead>
-            <TableHead className="text-center text-xs">OPS</TableHead>
+            {orderedCols.map((col) => (
+              <TableHead
+                key={col.key}
+                className={`text-center text-xs ${col.key === sortField ? "font-semibold text-primary" : ""}`}
+              >
+                {col.label}
+              </TableHead>
+            ))}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -312,26 +347,20 @@ function HitterTable({ hitters, sortField, season }: { hitters: HitterRow[]; sor
                 </Link>
               </TableCell>
               <TableCell className="text-xs text-muted-foreground">{h.team}</TableCell>
-              <TableCell className="text-center text-xs">{h.games}</TableCell>
-              <TableCell className="text-center text-xs">{h.PA}</TableCell>
-              <TableCell className={`text-center text-xs ${sortField === "AVG" ? "font-semibold text-primary" : ""}`}>
-                {Number(h.AVG || 0).toFixed(3)}
-              </TableCell>
-              <TableCell className={`text-center text-xs ${sortField === "HR" ? "font-semibold text-primary" : ""}`}>
-                {h.HR}
-              </TableCell>
-              <TableCell className={`text-center text-xs ${sortField === "RBI" ? "font-semibold text-primary" : ""}`}>
-                {h.RBI}
-              </TableCell>
-              <TableCell className={`text-center text-xs ${sortField === "OBP" ? "font-semibold text-primary" : ""}`}>
-                {Number(h.OBP || 0).toFixed(3)}
-              </TableCell>
-              <TableCell className={`text-center text-xs ${sortField === "SLG" ? "font-semibold text-primary" : ""}`}>
-                {Number(h.SLG || 0).toFixed(3)}
-              </TableCell>
-              <TableCell className={`text-center text-xs ${sortField === "OPS" ? "font-semibold text-primary" : ""}`}>
-                {Number(h.OPS || 0).toFixed(3)}
-              </TableCell>
+              {orderedCols.map((col) => {
+                const raw = h[col.key]
+                const val = col.decimal
+                  ? Number(raw || 0).toFixed(3)
+                  : String(raw ?? "-")
+                return (
+                  <TableCell
+                    key={col.key}
+                    className={`text-center text-xs ${col.key === sortField ? "font-semibold text-primary" : ""}`}
+                  >
+                    {val}
+                  </TableCell>
+                )
+              })}
             </TableRow>
           ))}
         </TableBody>
