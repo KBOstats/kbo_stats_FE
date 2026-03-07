@@ -18,6 +18,7 @@ type ViewMode = "card" | "table"
 type TeamFilter = "all" | string
 
 type HitterRow = {
+  player_id?: string
   team: string
   player_name: string
   games: number
@@ -224,19 +225,19 @@ export default function PlayersPage() {
             </div>
 
             {isLoading ? (
-              <div className="py-20 text-center text-sm text-muted-foreground">데이터를 불러오는 중...</div>
+              <div className="py-20 text-center text-sm text-muted-foreground">{tr("players.loadError", lang)}</div>
             ) : isError ? (
               <div className="rounded-md border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
-                선수 데이터 요청 실패: {error instanceof Error ? error.message : "unknown error"}
+                {tr("players.loadFail", lang)}: {error instanceof Error ? error.message : "unknown error"}
               </div>
             ) : viewMode === "table" ? (
-              <HitterTable hitters={filteredHitters} sortField={hitterSort} season={season} />
+              <HitterTable hitters={filteredHitters} sortField={hitterSort} season={season} lang={lang} />
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredHitters.map((h) => (
                   <Link
                     key={`${h.team}-${h.player_name}`}
-                    href={`/player/${encodeURIComponent(h.player_name)}?season=${season}`}
+                    href={`/player/${encodeURIComponent(h.player_id || h.player_name)}?season=${season}`}
                     className="rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/40"
                   >
                     <p className="text-sm font-semibold text-foreground">{h.player_name}</p>
@@ -273,8 +274,8 @@ export default function PlayersPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
-                    <TableHead className="text-xs">선수</TableHead>
-                    <TableHead className="text-xs">팀</TableHead>
+                    <TableHead className="text-xs">{tr("players.player", lang)}</TableHead>
+                    <TableHead className="text-xs">{tr("players.team", lang)}</TableHead>
                     <TableHead className="text-center text-xs">{pitcherSort}</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -296,7 +297,7 @@ export default function PlayersPage() {
   )
 }
 
-function HitterTable({ hitters, sortField, season }: { hitters: HitterRow[]; sortField: string; season: string }) {
+function HitterTable({ hitters, sortField, season, lang }: { hitters: HitterRow[]; sortField: string; season: string; lang: import("@/components/lang-context").Lang }) {
   // 모든 stat 컬럼 정의 (고정 앞 컬럼 제외)
   const ALL_STAT_COLS: { key: keyof HitterRow; label: string; decimal?: boolean }[] = [
     { key: "AVG", label: "AVG", decimal: true },
@@ -325,8 +326,8 @@ function HitterTable({ hitters, sortField, season }: { hitters: HitterRow[]; sor
         <TableHeader>
           <TableRow className="border-border hover:bg-transparent">
             <TableHead className="w-10 text-center text-xs">#</TableHead>
-            <TableHead className="text-xs">선수</TableHead>
-            <TableHead className="text-xs">팀</TableHead>
+            <TableHead className="text-xs">{tr("players.player", lang)}</TableHead>
+            <TableHead className="text-xs">{tr("players.team", lang)}</TableHead>
             {orderedCols.map((col) => (
               <TableHead
                 key={col.key}
@@ -342,7 +343,7 @@ function HitterTable({ hitters, sortField, season }: { hitters: HitterRow[]; sor
             <TableRow key={`${h.team}-${h.player_name}-${i}`} className="border-border">
               <TableCell className="text-center text-xs text-muted-foreground">{i + 1}</TableCell>
               <TableCell className="text-sm font-medium">
-                <Link href={`/player/${encodeURIComponent(h.player_name)}?season=${season}`} className="hover:text-primary">
+                <Link href={`/player/${encodeURIComponent(h.player_id || h.player_name)}?season=${season}`} className="hover:text-primary">
                   {h.player_name}
                 </Link>
               </TableCell>
