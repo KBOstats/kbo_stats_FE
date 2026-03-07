@@ -105,6 +105,14 @@ export const t: Record<string, Record<Lang, string>> = {
   "team.runsAgainst":  { ko: "실점",   en: "RA" },
   "team.h2hPct":       { ko: "승률",   en: "Win%" },
 
+  // Leaderboard labels
+  "lb.avg":        { ko: "타율 TOP 5",  en: "AVG TOP 5" },
+  "lb.hr":         { ko: "홈런 TOP 5", en: "HR TOP 5" },
+  "lb.era":        { ko: "ERA TOP 5",  en: "ERA TOP 5" },
+  "lb.war":        { ko: "WAR TOP 5",  en: "WAR TOP 5" },
+  "lb.noData":     { ko: "데이터 준비 중", en: "No data yet" },
+  "lb.ops":        { ko: "OPS TOP 5",  en: "OPS TOP 5" },
+
   // Standings
   "standings.title":   { ko: "2026 시즌 순위", en: "2026 Season Standings" },
   "standings.team":    { ko: "팀",  en: "Team" },
@@ -113,10 +121,49 @@ export const t: Record<string, Record<Lang, string>> = {
   "standings.l":       { ko: "패",  en: "L" },
 
   // Common
-  "common.loading":    { ko: "로딩 중...", en: "Loading..." },
-  "common.error":      { ko: "오류",      en: "Error" },
-  "common.season":     { ko: "시즌",      en: "Season" },
-  "common.home":       { ko: "홈",        en: "Home" },
+  "common.loading":          { ko: "로딩 중...", en: "Loading..." },
+  "common.error":            { ko: "오류",      en: "Error" },
+  "common.season":           { ko: "시즌",      en: "Season" },
+  "common.home":             { ko: "홈",        en: "Home" },
+
+  // Error messages
+  "standings.loadError":     { ko: "순위를 불러오지 못했습니다.",     en: "Failed to load standings." },
+  "roster.loadError":        { ko: "팀 리더보드를 불러오지 못했습니다.", en: "Failed to load roster." },
+  "h2h.loadError":           { ko: "상대 전적을 불러오지 못했습니다.", en: "Failed to load head-to-head." },
+  "players.loadError":       { ko: "데이터를 불러오는 중...",         en: "Loading data..." },
+  "players.loadFail":        { ko: "선수 데이터 요청 실패",           en: "Failed to load player data" },
+  "recentGames.title":       { ko: "오늘의 경기",                     en: "Today's Games" },
+
+  // Player detail page
+  "player.home":             { ko: "홈",          en: "Home" },
+  "player.players":          { ko: "선수",        en: "Players" },
+  "player.notFound":         { ko: "선수 상세 데이터 없음", en: "Player Not Found" },
+  "player.notFoundMsg":      { ko: "선수의 상세 데이터를 찾을 수 없습니다.", en: "No detail data found for this player." },
+  "player.noSeasonData":     { ko: "시즌 데이터 없음", en: "No Season Data" },
+  "player.noSeasonDataMsg":  { ko: "선수의 시즌 기록이 아직 없습니다.", en: "No season record available yet." },
+  "player.hitter":           { ko: "타자",        en: "Hitter" },
+  "player.pitcher":          { ko: "투수",        en: "Pitcher" },
+  "player.pitcherVizNA":     { ko: "투수 시각화 데이터 준비 중", en: "Pitcher visualization coming soon" },
+  "player.pitcherStatsTitle": { ko: "시즌 기록",  en: "Season Stats" },
+  "player.season":           { ko: "시즌",        en: "Season" },
+  "player.team":             { ko: "팀",          en: "Team" },
+  "ai.title":                { ko: "AI 성적 예측", en: "AI Projection" },
+  "ai.noData":               { ko: "해당 선수의 AI 예측 데이터가 아직 없습니다.", en: "No AI prediction data available for this player." },
+  "ai.asOf":                 { ko: "기준일",      en: "As of" },
+  "ai.confidence":           { ko: "신뢰도",      en: "Confidence" },
+  "ai.predictedOps":         { ko: "예측 OPS",    en: "Proj. OPS" },
+  "ai.predictedHr":          { ko: "예측 HR",     en: "Proj. HR" },
+  "ai.modelSource":          { ko: "모델 소스",   en: "Model" },
+  "chart.title":             { ko: "시각화",      en: "Visualization" },
+  "chart.season":            { ko: "시즌",        en: "Season" },
+  "chart.cumAvgOpsTitle":    { ko: "누적 타율 / OPS", en: "Cumulative AVG / OPS" },
+  "chart.cumAvgOps":         { ko: "누적 타율 / OPS", en: "Cumulative AVG / OPS" },
+  "chart.cumAvgOpsDesc":     { ko: "해당 달까지의 시즌 누적 성적", en: "Season-to-date stats through each month" },
+  "chart.monthlyHr":         { ko: "월별 홈런",   en: "Monthly HR" },
+  "chart.monthlyHrDesc":     { ko: "해당 달 동안 친 홈런 수", en: "Home runs hit during the month" },
+  "chart.noData":            { ko: "시즌 월별 게임 로그 데이터가 없습니다.", en: "No monthly game log data for this season." },
+  "chart.cumAvg":            { ko: "누적 타율",   en: "Cum. AVG" },
+  "chart.cumOps":            { ko: "누적 OPS",    en: "Cum. OPS" },
 }
 
 /** 번역 헬퍼 */
