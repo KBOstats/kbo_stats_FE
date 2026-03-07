@@ -1,12 +1,154 @@
+import Link from "next/link"
+import { BarChart3 } from "lucide-react"
+
+import { fetchJson } from "@/lib/api"
 import { SiteHeader } from "@/components/site-header"
 import { PlayerProfile } from "@/components/player-profile"
 import { PlayerStatsTable } from "@/components/player-stats-table"
-import { PlayerChart } from "@/components/player-chart"
-import { AIPredictionCard } from "@/components/ai-prediction-card"
-import { topHitters, topPitchers, playerSeasonHistory, aiPredictions } from "@/lib/mock-data"
+import { PlayerDetailSection } from "@/components/player-detail-section"
+import { PredictionSummary } from "@/components/prediction-summary"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Brain, BarChart3 } from "lucide-react"
-import Link from "next/link"
+import { topHitters, topPitchers } from "@/lib/mock-data"
+import type { HitterSeason, PlayerBase } from "@/lib/mock-data"
+
+type PlayerRow = {
+  season: number
+  team: string
+  games: number
+  PA: number
+  AB: number
+  H: number
+  "2B": number
+  "3B": number
+  HR: number
+  RBI: number
+  BB: number
+  SO: number
+  SB: number
+  AVG: number
+  OBP: number
+  SLG: number
+  OPS: number
+  WAR?: number
+  wRC?: number
+  BABIP?: number
+}
+
+type MonthlyRow = {
+  month: string
+  games: number
+  PA: number
+  AB: number
+  H: number
+  HR: number
+  BB: number
+  HBP?: number
+  SF?: number
+  TB_adj?: number
+  AVG: number
+  OBP: number
+  SLG: number
+  OPS: number
+}
+
+type PlayerDetailResponse = {
+  season: number
+  player_name: string
+  player_id?: string
+  profile?: {
+    teams_in_season?: string[]
+  }
+  season_rows?: PlayerRow[]
+  season_by_year?: PlayerRow[]
+  monthly_splits?: MonthlyRow[]
+  season_aggregate?: {
+    OPS?: number
+  }
+  latest_prediction?: {
+    predicted_hr_final?: number
+    predicted_ops_final?: number
+    confidence_score?: number
+    confidence_level?: string
+    model_source?: string
+    as_of_date?: string
+  } | null
+}
+
+const TEAM_COLORS: Record<string, string> = {
+  KIA: "#EA0029",
+  LG: "#C30452",
+  KT: "#000000",
+  NC: "#315288",
+  SSG: "#CE0E2D",
+  두산: "#131230",
+  롯데: "#041E42",
+  삼성: "#074CA1",
+  키움: "#820024",
+  한화: "#FF6600",
+}
+
+function toNumber(value: unknown): number {
+  const num = Number(value ?? 0)
+  return Number.isFinite(num) ? num : 0
+}
+
+function toRate(value: unknown): string {
+  return toNumber(value).toFixed(3)
+}
+
+function mapSeasonRows(rows: PlayerRow[] = []): HitterSeason[] {
+  return rows
+    .map((row) => ({
+      season: toNumber(row.season),
+      team: String(row.team ?? "-"),
+      G: toNumber(row.games),
+      PA: toNumber(row.PA),
+      AB: toNumber(row.AB),
+      H: toNumber(row.H),
+      "2B": toNumber(row["2B"]),
+      "3B": toNumber(row["3B"]),
+      HR: toNumber(row.HR),
+      RBI: toNumber(row.RBI),
+      SB: toNumber(row.SB),
+      BB: toNumber(row.BB),
+      SO: toNumber(row.SO),
+      AVG: toRate(row.AVG),
+      OBP: toRate(row.OBP),
+      SLG: toRate(row.SLG),
+      OPS: toRate(row.OPS),
+      WAR: row.WAR !== undefined ? String(row.WAR) : "-",
+      wRC: row.wRC !== undefined ? String(row.wRC) : "-",
+      BABIP: row.BABIP !== undefined ? toRate(row.BABIP) : "-",
+    }))
+    .sort((a, b) => a.season - b.season)
+}
+
+function buildApiProfile(detail: PlayerDetailResponse): PlayerBase {
+  const latest = detail.season_rows?.[0] ?? detail.season_by_year?.[0]
+  const teams = detail.profile?.teams_in_season ?? []
+  const teamLabel = teams.length > 0 ? teams.join(" / ") : (latest?.team ?? "-")
+
+  return {
+    id: `api-${detail.player_name}`,
+    name: detail.player_name,
+    team: teamLabel,
+    teamColor: TEAM_COLORS[latest?.team ?? ""] ?? "#6b7280",
+    position: "타자",
+    number: 0,
+    birthDate: "-",
+    age: 0,
+    hand: "-",
+    height: 0,
+    weight: 0,
+    salary: "-",
+    imageUrl: undefined,
+  }
+}
+
+function isApiNotFound(error: unknown): boolean {
+  return error instanceof Error && error.message.includes("API 404")
+}
+
 
 function PitcherStatsTable({ pitcher }: { pitcher: typeof topPitchers[number] }) {
   return (
@@ -66,80 +208,155 @@ function PitcherStatsTable({ pitcher }: { pitcher: typeof topPitchers[number] })
   )
 }
 
-export default async function PlayerPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+export default async function PlayerPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams?: Promise<{ season?: string }> | { season?: string }
+}) {
+  const [{ id }, qs] = await Promise.all([params, searchParams ? Promise.resolve(searchParams) : Promise.resolve({})])
+  const decodedId = decodeURIComponent(id)
+  const season = toNumber((qs as { season?: string }).season) || undefined
 
-  const hitter = topHitters.find((h) => h.id === id)
-  const pitcher = topPitchers.find((p) => p.id === id)
-  const player = hitter || pitcher
+  // Legacy mock route compatibility: /player/h1, /player/p1
+  const mockHitter = topHitters.find((h) => h.id === decodedId)
+  const mockPitcher = topPitchers.find((p) => p.id === decodedId)
+  if (mockHitter || mockPitcher) {
+    const displayPlayer = mockHitter || mockPitcher
+    const isHitter = !!mockHitter
+    return (
+      <div className="min-h-screen bg-background">
+        <SiteHeader />
+        <main className="mx-auto max-w-7xl px-4 py-6">
+          <nav className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Link href="/" className="hover:text-foreground transition-colors">홈</Link>
+            <span>/</span>
+            <Link href="/players" className="hover:text-foreground transition-colors">선수</Link>
+            <span>/</span>
+            <span className="text-foreground">{displayPlayer?.name}</span>
+          </nav>
 
-  // Fallback to first hitter if not found
-  const displayPlayer = player || topHitters[0]
-  const isHitter = !!hitter || !player
-  const prediction = aiPredictions.find((p) => p.playerId === displayPlayer.id)
+          {displayPlayer && <PlayerProfile player={displayPlayer} />}
+
+          <section className="mt-6">
+            {isHitter ? (
+              <PlayerDetailSection
+                playerName={mockHitter!.name}
+                playerId={mockHitter!.id}
+                seasonHistory={[]}
+                monthlyRows={[]}
+                selectedSeason={Number(mockHitter!.stats.season)}
+                availableSeasons={[Number(mockHitter!.stats.season)]}
+              />
+            ) : (
+              <div className="rounded-lg border border-border bg-card p-8 text-center">
+                <BarChart3 className="mx-auto h-10 w-10 text-muted-foreground" />
+                <p className="mt-3 text-sm text-muted-foreground">투수 시각화 데이터 준비 중</p>
+              </div>
+            )}
+          </section>
+
+          <section className="mt-6">
+            {isHitter ? (
+              <PlayerStatsTable seasons={[mockHitter!.stats]} />
+            ) : (
+              mockPitcher && <PitcherStatsTable pitcher={mockPitcher} />
+            )}
+          </section>
+        </main>
+      </div>
+    )
+  }
+
+  let detail: PlayerDetailResponse | null = null
+  let notFound = false
+  try {
+    detail = await fetchJson<PlayerDetailResponse>(`/players/${encodeURIComponent(decodedId)}`, { season })
+  } catch (error) {
+    notFound = isApiNotFound(error)
+    if (!notFound) throw error
+  }
+
+  if (!detail || notFound) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SiteHeader />
+        <main className="mx-auto max-w-7xl px-4 py-6">
+          <nav className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Link href="/" className="hover:text-foreground transition-colors">홈</Link>
+            <span>/</span>
+            <Link href="/players" className="hover:text-foreground transition-colors">선수</Link>
+            <span>/</span>
+            <span className="text-foreground">{decodedId}</span>
+          </nav>
+          <div className="rounded-lg border border-border bg-card p-6">
+            <h1 className="text-lg font-semibold text-foreground">선수 상세 데이터 없음</h1>
+            <p className="mt-2 text-sm text-muted-foreground">"{decodedId}" 선수의 상세 데이터를 찾을 수 없습니다.</p>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  const seasonHistory = mapSeasonRows(detail.season_by_year || detail.season_rows || [])
+  const monthlyRows = detail.monthly_splits ?? []
+  const availableSeasons = Array.from(
+    new Set((detail.season_by_year || detail.season_rows || []).map((r) => Number(r.season)))
+  ).filter(Boolean).sort((a, b) => b - a)
+
+  if (seasonHistory.length === 0) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SiteHeader />
+        <main className="mx-auto max-w-7xl px-4 py-6">
+          <div className="rounded-lg border border-border bg-card p-6">
+            <h1 className="text-lg font-semibold text-foreground">시즌 데이터 없음</h1>
+            <p className="mt-2 text-sm text-muted-foreground">"{decodedId}" 선수의 시즌 기록이 아직 없습니다.</p>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  const profile = buildApiProfile(detail)
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto max-w-7xl px-4 py-6">
-        {/* Breadcrumb */}
         <nav className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground">
           <Link href="/" className="hover:text-foreground transition-colors">홈</Link>
           <span>/</span>
           <Link href="/players" className="hover:text-foreground transition-colors">선수</Link>
           <span>/</span>
-          <span className="text-foreground">{displayPlayer.name}</span>
+          <span className="text-foreground">{detail.player_name}</span>
         </nav>
 
-        {/* Player Profile */}
-        <PlayerProfile player={displayPlayer} />
+        <PlayerProfile player={profile} />
 
-        {/* AI Prediction - Always on top */}
         <section className="mt-6">
-          {prediction ? (
-            <AIPredictionCard prediction={prediction} />
-          ) : (
-            <div className="rounded-lg border border-primary/20 bg-card p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                  <Brain className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground">AI 성적 예측</h3>
-                  <p className="text-xs text-muted-foreground">해당 선수의 AI 예측 데이터가 아직 준비되지 않았습니다. 데이터가 충분히 쌓이면 자동으로 생성됩니다.</p>
-                </div>
-              </div>
-            </div>
-          )}
+          <PredictionSummary prediction={detail.latest_prediction} />
         </section>
 
-        {/* Stats Chart */}
-        <section className="mt-6">
-          <div className="mb-3 flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-sm font-semibold text-foreground">시각화</h2>
-          </div>
-          {isHitter ? (
-            <PlayerChart seasons={displayPlayer.id === "h1" ? playerSeasonHistory : [topHitters.find(h => h.id === displayPlayer.id)?.stats || playerSeasonHistory[0]]} />
-          ) : (
-            <div className="rounded-lg border border-border bg-card p-8 text-center">
-              <BarChart3 className="mx-auto h-10 w-10 text-muted-foreground" />
-              <p className="mt-3 text-sm text-muted-foreground">투수 시각화 데이터 준비 중</p>
-            </div>
-          )}
-        </section>
+        <PlayerDetailSection
+          playerName={detail.player_name}
+          playerId={detail.player_id ?? detail.player_name}
+          seasonHistory={seasonHistory.map((s) => ({
+            season: Number(s.season),
+            team: s.team,
+            HR: Number(s.HR ?? 0),
+            AVG: s.AVG,
+            OPS: s.OPS,
+            WAR: s.WAR,
+          }))}
+          monthlyRows={monthlyRows}
+          selectedSeason={detail.season}
+          availableSeasons={availableSeasons.length > 0 ? availableSeasons : [detail.season]}
+        />
 
-        {/* Season Stats Table - Below */}
         <section className="mt-6">
-          {isHitter ? (
-            hitter ? (
-              <PlayerStatsTable seasons={displayPlayer.id === "h1" ? playerSeasonHistory : [hitter.stats]} />
-            ) : (
-              <PlayerStatsTable seasons={playerSeasonHistory} />
-            )
-          ) : (
-            pitcher && <PitcherStatsTable pitcher={pitcher} />
-          )}
+          <PlayerStatsTable seasons={seasonHistory} />
         </section>
       </main>
     </div>
