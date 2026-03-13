@@ -2,6 +2,7 @@
 
 import { TrendingUp, Trophy } from "lucide-react"
 import { useLang, tr } from "@/components/lang-context"
+import { formatPlayerName, formatTeamName } from "@/lib/romanize"
 
 type LeaderRow = {
   player_name: string
@@ -75,32 +76,32 @@ export function LeaderboardMini({ summary }: { summary: Summary }) {
 
   const avgLeaders = (summary.leaderboards.avg_top5 ?? []).map((p, i) => ({
     rank: i + 1,
-    name: p.player_name,
-    team: p.team,
+    name: formatPlayerName(p.player_name, lang),
+    team: formatTeamName(p.team, lang),
     value: formatTo3(p.AVG),
     sub: `${p.H ?? "-"}H / ${p.PA ?? "-"}PA`,
   }))
 
   const hrLeaders = (summary.leaderboards.hr_top5 ?? []).map((p, i) => ({
     rank: i + 1,
-    name: p.player_name,
-    team: p.team,
+    name: formatPlayerName(p.player_name, lang),
+    team: formatTeamName(p.team, lang),
     value: String(p.HR ?? "-"),
     sub: `${p.RBI ?? "-"}RBI / ${formatTo3(p.OPS)} OPS`,
   }))
 
   const eraLeaders = (summary.leaderboards.era_top5 ?? []).map((p, i) => ({
     rank: i + 1,
-    name: p.player_name,
-    team: p.team,
+    name: formatPlayerName(p.player_name, lang),
+    team: formatTeamName(p.team, lang),
     value: String(p.ERA ?? "-"),
     sub: p.PA ? `${p.PA}IP` : undefined,
   }))
 
   const warLeaders = (summary.leaderboards.war_top5 ?? []).map((p, i) => ({
     rank: i + 1,
-    name: p.player_name,
-    team: p.team,
+    name: formatPlayerName(p.player_name, lang),
+    team: formatTeamName(p.team, lang),
     value: String(p.WAR ?? "-"),
   }))
 

@@ -67,6 +67,11 @@ type PlayerDetailResponse = {
   latest_prediction?: {
     predicted_hr_final?: number
     predicted_ops_final?: number
+    predicted_war_final?: number
+    predicted_hits_final?: number
+    predicted_rbi_final?: number
+    golden_glove_probability?: number
+    mvp_probability?: number
     confidence_score?: number
     confidence_level?: string
     model_source?: string

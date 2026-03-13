@@ -3,9 +3,12 @@
 import { User, Calendar, Ruler, Weight, Banknote } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
+import { useLang } from "@/components/lang-context"
+import { formatPlayerName, formatTeamName } from "@/lib/romanize"
 import type { PlayerBase } from "@/lib/mock-data"
 
 export function PlayerProfile({ player }: { player: PlayerBase }) {
+  const { lang } = useLang()
   const hasBirth = player.birthDate && player.birthDate !== "-"
   const hasAge = Number(player.age) > 0
   const hasHeight = Number(player.height) > 0
@@ -21,14 +24,14 @@ export function PlayerProfile({ player }: { player: PlayerBase }) {
 
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold text-foreground">{player.name}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{formatPlayerName(player.name, lang)}</h1>
             {player.number > 0 && (
               <Badge variant="outline" className="text-xs font-mono border-border text-muted-foreground">
                 #{player.number}
               </Badge>
             )}
             <Badge className="text-xs" style={{ backgroundColor: player.teamColor, color: "#fff" }}>
-              {player.team}
+              {formatTeamName(player.team, lang)}
             </Badge>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">{player.position} / {player.hand}</p>

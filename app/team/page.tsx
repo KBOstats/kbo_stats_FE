@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { fetchJson } from "@/lib/api"
 import { useLang, tr } from "@/components/lang-context"
+import { formatPlayerName } from "@/lib/romanize"
 
 type StandingsRow = {
   rank: number
@@ -311,7 +312,7 @@ export default function TeamPage() {
                     <TableBody>
                       {(teamDetailQuery.data?.leaders.ops_top10 ?? []).map((row, idx) => (
                         <TableRow key={`${row.player_name}-${idx}`} className="border-border">
-                          <TableCell className="text-sm">{row.player_name}</TableCell>
+                          <TableCell className="text-sm">{formatPlayerName(row.player_name, lang)}</TableCell>
                           <TableCell className="text-center text-sm font-mono">{row.PA}</TableCell>
                           <TableCell className="text-center text-sm font-mono">{Number(row.OPS || 0).toFixed(3)}</TableCell>
                           <TableCell className="text-center text-sm font-mono">{row.HR}</TableCell>
@@ -339,7 +340,7 @@ export default function TeamPage() {
                     <TableBody>
                       {(teamDetailQuery.data?.leaders.hr_top10 ?? []).map((row, idx) => (
                         <TableRow key={`${row.player_name}-${idx}`} className="border-border">
-                          <TableCell className="text-sm">{row.player_name}</TableCell>
+                          <TableCell className="text-sm">{formatPlayerName(row.player_name, lang)}</TableCell>
                           <TableCell className="text-center text-sm font-mono">{row.PA}</TableCell>
                           <TableCell className="text-center text-sm font-mono">{row.HR}</TableCell>
                           <TableCell className="text-center text-sm font-mono">{row.RBI}</TableCell>

@@ -6,6 +6,11 @@ import { useLang, tr } from "@/components/lang-context"
 type PredictionData = {
   predicted_hr_final?: number
   predicted_ops_final?: number
+  predicted_war_final?: number
+  predicted_hits_final?: number
+  predicted_rbi_final?: number
+  golden_glove_probability?: number
+  mvp_probability?: number
   confidence_score?: number
   confidence_level?: string
   model_source?: string
@@ -19,6 +24,10 @@ function toNum(value: unknown): number {
 
 function toRate(value: unknown): string {
   return toNum(value).toFixed(3)
+}
+
+function toPercent(value: unknown): string {
+  return `${(toNum(value) * 100).toFixed(1)}%`
 }
 
 export function PredictionSummary({ prediction }: { prediction?: PredictionData | null }) {
@@ -49,7 +58,7 @@ export function PredictionSummary({ prediction }: { prediction?: PredictionData 
       <p className="mt-2 text-xs text-muted-foreground">
         {tr("ai.asOf", lang)}: {prediction.as_of_date || "-"} / {tr("ai.confidence", lang)}: {confidencePct}% ({prediction.confidence_level || "N/A"})
       </p>
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:max-w-sm">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
         <div className="rounded-md bg-secondary/50 px-3 py-2">
           <p className="text-xs text-muted-foreground">{tr("ai.predictedOps", lang)}</p>
           <p className="text-lg font-mono font-semibold text-foreground">{toRate(prediction.predicted_ops_final)}</p>
@@ -57,6 +66,26 @@ export function PredictionSummary({ prediction }: { prediction?: PredictionData 
         <div className="rounded-md bg-secondary/50 px-3 py-2">
           <p className="text-xs text-muted-foreground">{tr("ai.predictedHr", lang)}</p>
           <p className="text-lg font-mono font-semibold text-foreground">{Math.round(toNum(prediction.predicted_hr_final))}</p>
+        </div>
+        <div className="rounded-md bg-secondary/50 px-3 py-2 border border-primary/30">
+          <p className="text-xs text-muted-foreground">{tr("ai.predictedWar", lang)}</p>
+          <p className="text-lg font-mono font-semibold text-primary">{toNum(prediction.predicted_war_final).toFixed(1)}</p>
+        </div>
+        <div className="rounded-md bg-secondary/50 px-3 py-2">
+          <p className="text-xs text-muted-foreground">{tr("ai.predictedHits", lang)}</p>
+          <p className="text-lg font-mono font-semibold text-foreground">{Math.round(toNum(prediction.predicted_hits_final))}</p>
+        </div>
+        <div className="rounded-md bg-secondary/50 px-3 py-2">
+          <p className="text-xs text-muted-foreground">{tr("ai.predictedRbi", lang)}</p>
+          <p className="text-lg font-mono font-semibold text-foreground">{Math.round(toNum(prediction.predicted_rbi_final))}</p>
+        </div>
+        <div className="rounded-md bg-secondary/50 px-3 py-2">
+          <p className="text-xs text-muted-foreground">{tr("ai.goldenGloveProb", lang)}</p>
+          <p className="text-lg font-mono font-semibold text-foreground">{toPercent(prediction.golden_glove_probability)}</p>
+        </div>
+        <div className="rounded-md bg-secondary/50 px-3 py-2">
+          <p className="text-xs text-muted-foreground">{tr("ai.mvpProb", lang)}</p>
+          <p className="text-lg font-mono font-semibold text-foreground">{toPercent(prediction.mvp_probability)}</p>
         </div>
       </div>
       <p className="mt-3 text-xs text-muted-foreground">{tr("ai.modelSource", lang)}: {prediction.model_source || "-"}</p>

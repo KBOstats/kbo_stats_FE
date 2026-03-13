@@ -2,8 +2,11 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { HitterSeason } from "@/lib/mock-data"
+import { useLang } from "@/components/lang-context"
+import { formatTeamName } from "@/lib/romanize"
 
 export function PlayerStatsTable({ seasons }: { seasons: HitterSeason[] }) {
+  const { lang } = useLang()
   return (
     <div className="rounded-lg border border-border bg-card">
       <div className="border-b border-border px-4 py-3">
@@ -36,10 +39,10 @@ export function PlayerStatsTable({ seasons }: { seasons: HitterSeason[] }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {seasons.map((s) => (
-              <TableRow key={s.season} className="border-border hover:bg-secondary/50 transition-colors">
+            {seasons.map((s, idx) => (
+              <TableRow key={`${s.season}-${s.team}-${idx}`} className="border-border hover:bg-secondary/50 transition-colors">
                 <TableCell className="text-sm font-mono font-medium text-foreground sticky left-0 bg-card z-10">{s.season}</TableCell>
-                <TableCell className="text-sm text-muted-foreground sticky left-12 bg-card z-10">{s.team}</TableCell>
+                <TableCell className="text-sm text-muted-foreground sticky left-12 bg-card z-10">{formatTeamName(s.team, lang)}</TableCell>
                 <TableCell className="text-center text-sm font-mono text-foreground">{s.G}</TableCell>
                 <TableCell className="text-center text-sm font-mono text-foreground">{s.PA}</TableCell>
                 <TableCell className="text-center text-sm font-mono text-foreground">{s.AB}</TableCell>

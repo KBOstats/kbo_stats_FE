@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch"
 import { fetchJson } from "@/lib/api"
 import { topPitchers } from "@/lib/mock-data"
 import { useLang, tr } from "@/components/lang-context"
+import { formatPlayerName, formatTeamName } from "@/lib/romanize"
 
 type ViewMode = "card" | "table"
 type TeamFilter = "all" | string
@@ -240,8 +241,8 @@ export default function PlayersPage() {
                     href={`/player/${encodeURIComponent(h.player_id || h.player_name)}?season=${season}`}
                     className="rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/40"
                   >
-                    <p className="text-sm font-semibold text-foreground">{h.player_name}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">{h.team}</p>
+                    <p className="text-sm font-semibold text-foreground">{formatPlayerName(h.player_name, lang)}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{formatTeamName(h.team, lang)}</p>
                     <p className="mt-3 text-xs text-muted-foreground">{hitterSort}</p>
                     <p className="text-lg font-bold text-primary">
                       {formatMetric(Number(h[hitterSort as keyof HitterRow] ?? 0), hitterSort)}
@@ -282,8 +283,8 @@ export default function PlayersPage() {
                 <TableBody>
                   {filteredPitchers.map((p) => (
                     <TableRow key={p.id} className="border-border">
-                      <TableCell className="text-sm font-medium">{p.name}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{p.team}</TableCell>
+                      <TableCell className="text-sm font-medium">{formatPlayerName(p.name, lang)}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{formatTeamName(p.team, lang)}</TableCell>
                       <TableCell className="text-center text-sm">{String(p.stats[pitcherSort as keyof typeof p.stats])}</TableCell>
                     </TableRow>
                   ))}
@@ -344,10 +345,10 @@ function HitterTable({ hitters, sortField, season, lang }: { hitters: HitterRow[
               <TableCell className="text-center text-xs text-muted-foreground">{i + 1}</TableCell>
               <TableCell className="text-sm font-medium">
                 <Link href={`/player/${encodeURIComponent(h.player_id || h.player_name)}?season=${season}`} className="hover:text-primary">
-                  {h.player_name}
+                  {formatPlayerName(h.player_name, lang)}
                 </Link>
               </TableCell>
-              <TableCell className="text-xs text-muted-foreground">{h.team}</TableCell>
+              <TableCell className="text-xs text-muted-foreground">{formatTeamName(h.team, lang)}</TableCell>
               {orderedCols.map((col) => {
                 const raw = h[col.key]
                 const val = col.decimal

@@ -1,7 +1,8 @@
 ﻿"use client"
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useLang } from "@/components/lang-context"
+import { useLang, tr } from "@/components/lang-context"
+import { formatTeamName } from "@/lib/romanize"
 
 type StandingRow = {
   rank: number
@@ -41,23 +42,20 @@ export function StandingsTable({
 }) {
   const { lang } = useLang()
 
-  const title = lang === "en" ? "Season Standings" : "시즌 순위"
-  const teamLabel = lang === "en" ? "Team" : "팀"
-
   return (
     <div className="rounded-lg border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+        <h2 className="text-sm font-semibold text-foreground">{tr("standings.title", lang)}</h2>
         <span className="font-mono text-xs text-muted-foreground">{asOfDate ?? "-"}</span>
       </div>
       <Table>
         <TableHeader>
           <TableRow className="border-border hover:bg-transparent">
             <TableHead className="w-10 text-center text-xs text-muted-foreground">#</TableHead>
-            <TableHead className="text-xs text-muted-foreground">{teamLabel}</TableHead>
-            <TableHead className="text-center text-xs text-muted-foreground">W</TableHead>
-            <TableHead className="text-center text-xs text-muted-foreground">D</TableHead>
-            <TableHead className="text-center text-xs text-muted-foreground">L</TableHead>
+            <TableHead className="text-xs text-muted-foreground">{tr("standings.team", lang)}</TableHead>
+            <TableHead className="text-center text-xs text-muted-foreground">{tr("standings.w", lang)}</TableHead>
+            <TableHead className="text-center text-xs text-muted-foreground">{tr("standings.d", lang)}</TableHead>
+            <TableHead className="text-center text-xs text-muted-foreground">{tr("standings.l", lang)}</TableHead>
             <TableHead className="text-center text-xs text-muted-foreground">PCT</TableHead>
             <TableHead className="text-center text-xs text-muted-foreground">GB</TableHead>
             <TableHead className="hidden text-center text-xs text-muted-foreground sm:table-cell">Streak</TableHead>
@@ -68,7 +66,7 @@ export function StandingsTable({
           {rows.map((team) => (
             <TableRow key={`${team.rank}-${team.team}`} className="border-border transition-colors hover:bg-secondary/50">
               <TableCell className="text-center text-xs font-mono text-muted-foreground">{team.rank}</TableCell>
-              <TableCell className="text-sm font-medium text-foreground">{team.team}</TableCell>
+              <TableCell className="text-sm font-medium text-foreground">{formatTeamName(team.team, lang)}</TableCell>
               <TableCell className="text-center text-sm font-mono text-foreground">{team.wins}</TableCell>
               <TableCell className="text-center text-sm font-mono text-muted-foreground">{team.draws}</TableCell>
               <TableCell className="text-center text-sm font-mono text-foreground">{team.losses}</TableCell>
