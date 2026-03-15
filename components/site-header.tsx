@@ -10,6 +10,7 @@ import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { useLang, tr } from "@/components/lang-context"
 import { fetchJson } from "@/lib/api"
+import { formatPlayerName, formatTeamName } from "@/lib/romanize"
 
 type SearchRow = {
   player_id: string
@@ -22,11 +23,11 @@ type SearchRow = {
 }
 
 const TEAMS: { name: string; aliases: string[] }[] = [
-  { name: "KIA",  aliases: ["kia", "기아"] },
-  { name: "LG",   aliases: ["lg"] },
-  { name: "KT",   aliases: ["kt"] },
-  { name: "NC",   aliases: ["nc"] },
-  { name: "SSG",  aliases: ["ssg", "쌍용", "신세계"] },
+  { name: "KIA", aliases: ["kia", "기아"] },
+  { name: "LG", aliases: ["lg"] },
+  { name: "KT", aliases: ["kt"] },
+  { name: "NC", aliases: ["nc"] },
+  { name: "SSG", aliases: ["ssg", "쓱", "신세계"] },
   { name: "두산", aliases: ["두산", "doosan"] },
   { name: "롯데", aliases: ["롯데", "lotte"] },
   { name: "삼성", aliases: ["삼성", "samsung"] },
@@ -38,8 +39,8 @@ function matchTeams(query: string): SearchRow[] {
   const q = query.toLowerCase().trim()
   if (!q) return []
   return TEAMS
-    .filter(t => t.name.toLowerCase().includes(q) || t.aliases.some(a => a.includes(q)))
-    .map(t => ({ player_id: "", player_name: t.name, team: t.name, _type: "team" as const }))
+    .filter((t) => t.name.toLowerCase().includes(q) || t.aliases.some((a) => a.includes(q)))
+    .map((t) => ({ player_id: "", player_name: t.name, team: t.name, _type: "team" as const }))
 }
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -66,20 +67,19 @@ export function SiteHeader() {
 
   const debouncedQuery = useDebounce(query, 300)
 
-  // Fetch search results when debounced query changes
   useEffect(() => {
     if (!debouncedQuery.trim()) {
       setResults([])
       setDropdownOpen(false)
       return
     }
+
     setIsSearching(true)
-    // 팀 로컬 매칭 (즉시)
     const teamHits = matchTeams(debouncedQuery)
-    // 선수 API 검색
+
     fetchJson<{ rows: SearchRow[] }>("/players/search", { q: debouncedQuery, limit: 6 })
       .then((data) => {
-        const playerHits = (data.rows ?? []).map(r => ({ ...r, _type: "player" as const }))
+        const playerHits = (data.rows ?? []).map((row) => ({ ...row, _type: "player" as const }))
         setResults([...teamHits, ...playerHits])
         setDropdownOpen(true)
       })
@@ -90,13 +90,13 @@ export function SiteHeader() {
       .finally(() => setIsSearching(false))
   }, [debouncedQuery])
 
-  // Close dropdown on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setDropdownOpen(false)
       }
     }
+
     document.addEventListener("mousedown", handleClick)
     return () => document.removeEventListener("mousedown", handleClick)
   }, [])
@@ -122,11 +122,11 @@ export function SiteHeader() {
 
   const navItems = useMemo(
     () => [
-      { label: tr("nav.home", lang),    href: "/" },
+      { label: tr("nav.home", lang), href: "/" },
       { label: tr("nav.players", lang), href: "/players" },
-      { label: tr("nav.teams", lang),   href: "/team" },
+      { label: tr("nav.teams", lang), href: "/team" },
     ],
-    [lang]
+    [lang],
   )
 
   function isActive(href: string) {
@@ -137,7 +137,6 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4">
-        {/* Logo */}
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <Image src="/icon.png" alt="KBOstats logo" width={32} height={32} className="rounded-md" />
           <span className="text-lg font-bold tracking-tight text-foreground">
@@ -145,7 +144,6 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        {/* Desktop Nav */}
         <nav className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => (
             <Link
@@ -165,7 +163,6 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        {/* Search bar with live dropdown */}
         <div className="flex flex-1 justify-center px-1">
           <div className="relative w-full max-w-md" ref={searchRef}>
             <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -180,14 +177,16 @@ export function SiteHeader() {
             />
             {query && (
               <button
-                onClick={() => { setQuery(""); setDropdownOpen(false) }}
+                onClick={() => {
+                  setQuery("")
+                  setDropdownOpen(false)
+                }}
                 className="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
 
-            {/* Dropdown */}
             {dropdownOpen && (
               <div className="absolute top-full left-0 right-0 mt-1 overflow-hidden rounded-lg border border-border bg-card shadow-xl">
                 {isSearching ? (
@@ -210,7 +209,7 @@ export function SiteHeader() {
                             <>
                               <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-primary/20 text-[10px] font-bold text-primary shrink-0">T</span>
                               <div className="min-w-0 flex-1">
-                                <span className="text-sm font-medium text-foreground">{row.player_name}</span>
+                                <span className="text-sm font-medium text-foreground">{formatTeamName(row.player_name, lang)}</span>
                                 <span className="ml-2 text-xs text-muted-foreground">{lang === "en" ? "Team" : "팀"}</span>
                               </div>
                             </>
@@ -218,12 +217,12 @@ export function SiteHeader() {
                             <>
                               <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-secondary text-[10px] font-bold text-muted-foreground shrink-0">P</span>
                               <div className="min-w-0 flex-1">
-                                <span className="text-sm font-medium text-foreground">{row.player_name}</span>
-                                <span className="ml-2 text-xs text-muted-foreground">{row.team}</span>
+                                <span className="text-sm font-medium text-foreground">{formatPlayerName(row.player_name, lang)}</span>
+                                <span className="ml-2 text-xs text-muted-foreground">{formatTeamName(row.team, lang)}</span>
                               </div>
                               <div className="flex gap-3 text-xs font-mono text-muted-foreground shrink-0">
                                 {row.AVG !== undefined && <span>AVG {Number.isFinite(Number(row.AVG)) ? Number(row.AVG).toFixed(3) : "-"}</span>}
-                                {row.HR  !== undefined && <span>HR {String(row.HR ?? "-")}</span>}
+                                {row.HR !== undefined && <span>HR {String(row.HR ?? "-")}</span>}
                                 {row.OPS !== undefined && <span>OPS {Number.isFinite(Number(row.OPS)) ? Number(row.OPS).toFixed(3) : "-"}</span>}
                               </div>
                             </>
@@ -238,7 +237,6 @@ export function SiteHeader() {
           </div>
         </div>
 
-        {/* Settings menu */}
         <div className="relative flex shrink-0 items-center">
           <Button
             variant="ghost"
@@ -252,7 +250,6 @@ export function SiteHeader() {
 
           {menuOpen && (
             <div className="absolute top-10 right-0 w-64 rounded-lg border border-border bg-card p-3 shadow-xl">
-              {/* Mobile nav links */}
               <div className="mb-3 md:hidden">
                 <p className="mb-2 text-xs font-medium text-muted-foreground">{tr("ui.menu", lang)}</p>
                 <div className="grid grid-cols-3 gap-1">
@@ -271,7 +268,6 @@ export function SiteHeader() {
                 </div>
               </div>
 
-              {/* Theme toggle */}
               <div className="mb-3">
                 <p className="mb-2 text-xs font-medium text-muted-foreground">{tr("ui.theme", lang)}</p>
                 <div className="grid grid-cols-2 gap-1">
@@ -294,7 +290,6 @@ export function SiteHeader() {
                 </div>
               </div>
 
-              {/* Language toggle */}
               <div>
                 <p className="mb-2 text-xs font-medium text-muted-foreground">{tr("ui.language", lang)}</p>
                 <div className="grid grid-cols-2 gap-1">
