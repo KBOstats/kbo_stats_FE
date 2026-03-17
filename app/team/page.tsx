@@ -35,6 +35,7 @@ type StandingsResponse = {
 
 type LeaderRow = {
   player_name: string
+  birth_date?: string | null
   PA: number
   H: number
   HR: number
@@ -97,6 +98,15 @@ function formatPct(value: number | string) {
 function formatDate(yyyymmdd: string) {
   if (!yyyymmdd || yyyymmdd.length !== 8) return yyyymmdd
   return `${yyyymmdd.slice(4, 6)}.${yyyymmdd.slice(6, 8)}`
+}
+
+function formatKoreanDate(dateStr: string | null | undefined) {
+  if (!dateStr || dateStr === "-") return ""
+  const parts = dateStr.split("-")
+  if (parts.length === 3) {
+    return `${parts[0]}년 ${parseInt(parts[1], 10)}월 ${parseInt(parts[2], 10)}일`
+  }
+  return dateStr
 }
 
 function getDefaultSeasonByKstDate() {
@@ -312,7 +322,10 @@ export default function TeamPage() {
                     <TableBody>
                       {(teamDetailQuery.data?.leaders.ops_top10 ?? []).map((row, idx) => (
                         <TableRow key={`${row.player_name}-${idx}`} className="border-border">
-                          <TableCell className="text-sm">{formatPlayerName(row.player_name, lang)}</TableCell>
+                          <TableCell className="text-sm">
+                            {formatPlayerName(row.player_name, lang)}
+                            {row.birth_date && row.birth_date !== "-" ? ` (${formatKoreanDate(row.birth_date)})` : ""}
+                          </TableCell>
                           <TableCell className="text-center text-sm font-mono">{row.PA}</TableCell>
                           <TableCell className="text-center text-sm font-mono">{Number(row.OPS || 0).toFixed(3)}</TableCell>
                           <TableCell className="text-center text-sm font-mono">{row.HR}</TableCell>
@@ -340,7 +353,10 @@ export default function TeamPage() {
                     <TableBody>
                       {(teamDetailQuery.data?.leaders.hr_top10 ?? []).map((row, idx) => (
                         <TableRow key={`${row.player_name}-${idx}`} className="border-border">
-                          <TableCell className="text-sm">{formatPlayerName(row.player_name, lang)}</TableCell>
+                          <TableCell className="text-sm">
+                            {formatPlayerName(row.player_name, lang)}
+                            {row.birth_date && row.birth_date !== "-" ? ` (${formatKoreanDate(row.birth_date)})` : ""}
+                          </TableCell>
                           <TableCell className="text-center text-sm font-mono">{row.PA}</TableCell>
                           <TableCell className="text-center text-sm font-mono">{row.HR}</TableCell>
                           <TableCell className="text-center text-sm font-mono">{row.RBI}</TableCell>
@@ -393,23 +409,26 @@ export default function TeamPage() {
                       <TableHead className="text-center text-xs">{tr("team.h2hPct", lang)}</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
-                    {(teamDetailQuery.data?.h2h ?? []).map((row) => {
-                      const total = row.wins + row.losses
-                      const pct = total > 0 ? (row.wins / total).toFixed(3) : "-"
-                      return (
-                        <TableRow key={row.opp_team} className="border-border">
-                          <TableCell className="text-sm">{row.opp_team}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.wins}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.losses}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.draws}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.runs_for}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.runs_against}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{pct}</TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
+                   <TableBody>
+                     {[...(teamDetailQuery.data?.h2h ?? [])].sort((a, b) => {
+                       if (b.wins !== a.wins) return b.wins - a.wins
+                       return a.opp_team.localeCompare(b.opp_team, "ko")
+                     }).map((row) => {
+                       const total = row.wins + row.losses
+                       const pct = total > 0 ? (row.wins / total).toFixed(3) : "-"
+                       return (
+                         <TableRow key={row.opp_team} className="border-border">
+                           <TableCell className="text-sm">{row.opp_team}</TableCell>
+                           <TableCell className="text-center text-sm font-mono">{row.wins}</TableCell>
+                           <TableCell className="text-center text-sm font-mono">{row.losses}</TableCell>
+                           <TableCell className="text-center text-sm font-mono">{row.draws}</TableCell>
+                           <TableCell className="text-center text-sm font-mono">{row.runs_for}</TableCell>
+                           <TableCell className="text-center text-sm font-mono">{row.runs_against}</TableCell>
+                           <TableCell className="text-center text-sm font-mono">{pct}</TableCell>
+                         </TableRow>
+                       )
+                     })}
+                   </TableBody>
                 </Table>
               </div>
             )}
@@ -548,8 +567,11 @@ function ScheduleCalendar({
                 return (
                   <div key={gi} className={`mb-1 rounded p-1 ${bgClass}`}>
                     {/* 상대팀 + 홈/원정 */}
-                    <p className="truncate text-[10px] font-medium text-foreground leading-tight">
-                      {game.is_home ? "🏠" : "✈"} {game.opp_team}
+                    <p className="flex items-center gap-1 truncate text-[10px] font-medium text-foreground leading-tight">
+                      <span className={`shrink-0 rounded px-1 py-px text-[9px] font-bold leading-none ${game.is_home ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"}`}>
+                        {game.is_home ? (lang === "en" ? "H" : "홈") : (lang === "en" ? "A" : "원정")}
+                      </span>
+                      <span className="truncate">{game.opp_team}</span>
                     </p>
                     {/* 결과 */}
                     {hasResult ? (
