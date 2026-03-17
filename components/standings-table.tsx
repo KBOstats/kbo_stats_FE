@@ -56,10 +56,10 @@ export function StandingsTable({
             <TableHead className="text-center text-xs text-muted-foreground">{tr("standings.w", lang)}</TableHead>
             <TableHead className="text-center text-xs text-muted-foreground">{tr("standings.d", lang)}</TableHead>
             <TableHead className="text-center text-xs text-muted-foreground">{tr("standings.l", lang)}</TableHead>
-            <TableHead className="text-center text-xs text-muted-foreground">PCT</TableHead>
-            <TableHead className="text-center text-xs text-muted-foreground">GB</TableHead>
-            <TableHead className="hidden text-center text-xs text-muted-foreground sm:table-cell">Streak</TableHead>
-            <TableHead className="hidden text-center text-xs text-muted-foreground md:table-cell">Last10</TableHead>
+            <TableHead className="text-center text-xs text-muted-foreground">{lang === "en" ? "PCT" : "승률"}</TableHead>
+            <TableHead className="text-center text-xs text-muted-foreground">{lang === "en" ? "GB" : "게임차"}</TableHead>
+            <TableHead className="hidden text-center text-xs text-muted-foreground sm:table-cell">{lang === "en" ? "Streak" : "연속"}</TableHead>
+            <TableHead className="hidden text-center text-xs text-muted-foreground md:table-cell">{lang === "en" ? "Last10" : "최근10"}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
