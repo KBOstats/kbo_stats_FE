@@ -79,7 +79,7 @@ export function LeaderboardMini({ summary }: { summary: Summary }) {
     name: formatPlayerName(p.player_name, lang),
     team: formatTeamName(p.team, lang),
     value: formatTo3(p.AVG),
-    sub: `${p.H ?? "-"}H / ${p.PA ?? "-"}PA`,
+    sub: `${p.H ?? "-"}안타 / ${p.PA ?? "-"}타석`,
   }))
 
   const hrLeaders = (summary.leaderboards.hr_top5 ?? []).map((p, i) => ({
@@ -87,7 +87,7 @@ export function LeaderboardMini({ summary }: { summary: Summary }) {
     name: formatPlayerName(p.player_name, lang),
     team: formatTeamName(p.team, lang),
     value: String(p.HR ?? "-"),
-    sub: `${p.RBI ?? "-"}RBI / ${formatTo3(p.OPS)} OPS`,
+    sub: `${p.RBI ?? "-"}타점 / OPS ${formatTo3(p.OPS)}`,
   }))
 
   const eraLeaders = (summary.leaderboards.era_top5 ?? []).map((p, i) => ({
