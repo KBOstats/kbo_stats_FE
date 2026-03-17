@@ -7,10 +7,34 @@ import { useLang } from "@/components/lang-context"
 import { formatPlayerName, formatTeamName } from "@/lib/romanize"
 import type { PlayerBase } from "@/lib/mock-data"
 
+function formatKoreanDate(dateStr: string) {
+  if (!dateStr || dateStr === "-") return ""
+  const parts = dateStr.split("-")
+  if (parts.length === 3) {
+    return `${parts[0]}년 ${parseInt(parts[1], 10)}월 ${parseInt(parts[2], 10)}일`
+  }
+  return dateStr
+}
+
+function calcAge(birthDate: string): number {
+  if (!birthDate || birthDate === "-") return 0
+  try {
+    const today = new Date()
+    const birth = new Date(birthDate)
+    let age = today.getFullYear() - birth.getFullYear()
+    const m = today.getMonth() - birth.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
+    return age > 0 ? age : 0
+  } catch {
+    return 0
+  }
+}
+
 export function PlayerProfile({ player }: { player: PlayerBase }) {
   const { lang } = useLang()
-  const hasBirth = player.birthDate && player.birthDate !== "-"
-  const hasAge = Number(player.age) > 0
+  const hasBirth  = player.birthDate && player.birthDate !== "-"
+  const hasHand   = player.hand && player.hand !== "-"
+  const computedAge = hasBirth ? calcAge(player.birthDate) : Number(player.age)
   const hasHeight = Number(player.height) > 0
   const hasWeight = Number(player.weight) > 0
   const hasSalary = player.salary && player.salary !== "-"
@@ -34,14 +58,22 @@ export function PlayerProfile({ player }: { player: PlayerBase }) {
               {formatTeamName(player.team, lang)}
             </Badge>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">{player.position} / {player.hand}</p>
+
+          {/* Position / Hand */}
+          <p className="mt-1 text-sm text-muted-foreground">
+            {player.position}
+            {hasHand ? ` · ${player.hand}` : (
+              <span className="ml-1 text-xs text-muted-foreground/60">(투타 정보 없음)</span>
+            )}
+          </p>
 
           <div className="mt-3 flex flex-wrap gap-4">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Calendar className="h-3.5 w-3.5" />
               <span>
-                {hasBirth ? player.birthDate : "생년월일 정보 없음"}
-                {hasAge ? ` (${player.age}세)` : ""}
+                {hasBirth
+                  ? `${formatKoreanDate(player.birthDate)}${computedAge > 0 ? ` (${computedAge}세)` : ""}`
+                  : "생년월일 정보 없음"}
               </span>
             </div>
             {hasHeight && (
