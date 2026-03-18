@@ -1,5 +1,6 @@
 ﻿"use client"
 
+import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useLang, tr } from "@/components/lang-context"
 import { formatTeamName } from "@/lib/romanize"
@@ -66,7 +67,14 @@ export function StandingsTable({
           {rows.map((team) => (
             <TableRow key={`${team.rank}-${team.team}`} className="border-border transition-colors hover:bg-secondary/50">
               <TableCell className="text-center text-xs font-mono text-muted-foreground">{team.rank}</TableCell>
-              <TableCell className="text-sm font-medium text-foreground">{formatTeamName(team.team, lang)}</TableCell>
+              <TableCell className="text-sm font-medium">
+                <Link
+                  href={`/team?team=${encodeURIComponent(team.team)}`}
+                  className="text-foreground hover:text-primary hover:underline underline-offset-2 transition-colors"
+                >
+                  {formatTeamName(team.team, lang)}
+                </Link>
+              </TableCell>
               <TableCell className="text-center text-sm font-mono text-foreground">{team.wins}</TableCell>
               <TableCell className="text-center text-sm font-mono text-muted-foreground">{team.draws}</TableCell>
               <TableCell className="text-center text-sm font-mono text-foreground">{team.losses}</TableCell>
