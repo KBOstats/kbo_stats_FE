@@ -117,7 +117,14 @@ function CumAvgOpsChart({ data, tickColor, gridColor, lang }: { data: CumEntry[]
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={data} margin={{ top: 6, right: 8, bottom: 16, left: -16 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-          <XAxis dataKey="monthLabel" tick={{ fontSize: 11, fill: tickColor }} />
+          <XAxis
+            dataKey="monthLabel"
+            interval={0}
+            minTickGap={0}
+            tickMargin={8}
+            height={36}
+            tick={{ fontSize: 11, fill: tickColor }}
+          />
           <YAxis
             domain={[0, 1.2]}
             tickFormatter={(v) => Number(v).toFixed(2)}
@@ -132,12 +139,12 @@ function CumAvgOpsChart({ data, tickColor, gridColor, lang }: { data: CumEntry[]
             wrapperStyle={{ fontSize: 12 }}
           />
           <Line
-            type="monotone" dataKey="cumAVG" stroke="#22c55e" strokeWidth={2.5}
-            dot={{ r: 4, fill: "#22c55e", strokeWidth: 0 }} activeDot={{ r: 6 }} connectNulls
-          />
-          <Line
             type="monotone" dataKey="cumOPS" stroke="#3b82f6" strokeWidth={2.5}
             dot={{ r: 4, fill: "#3b82f6", strokeWidth: 0 }} activeDot={{ r: 6 }} connectNulls
+          />
+          <Line
+            type="monotone" dataKey="cumAVG" stroke="#22c55e" strokeWidth={2.5}
+            dot={{ r: 4, fill: "#22c55e", strokeWidth: 0 }} activeDot={{ r: 6 }} connectNulls
           />
         </LineChart>
       </ResponsiveContainer>
@@ -162,6 +169,10 @@ function HrBarChart({ data, tickColor, gridColor, labelColor, lang }: { data: Cu
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
           <XAxis
             dataKey="monthLabel"
+            interval={0}
+            minTickGap={0}
+            tickMargin={8}
+            height={36}
             tick={{ fontSize: 11, fill: tickColor }}
             axisLine={{ stroke: gridColor }}
             tickLine={false}
