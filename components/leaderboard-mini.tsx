@@ -6,9 +6,11 @@ import { useLang, tr } from "@/components/lang-context"
 import { formatPlayerName, formatTeamName } from "@/lib/romanize"
 
 type LeaderRow = {
+  player_type?: "hitter" | "pitcher"
   player_name: string
   team: string
   PA?: number
+  OUTS?: number
   H?: number
   HR?: number | string
   RBI?: number
@@ -123,7 +125,9 @@ export function LeaderboardMini({ summary }: { summary: Summary }) {
     name: formatPlayerName(p.player_name, lang),
     team: formatTeamName(p.team, lang),
     value: String(p.WAR ?? "-"),
-    playerHref: `/player/${encodeURIComponent(p.player_name)}`,
+    playerHref: p.player_type === "pitcher"
+      ? `/player/${encodeURIComponent(p.player_name)}?player_type=pitcher`
+      : `/player/${encodeURIComponent(p.player_name)}`,
   }))
 
   const noDataText = tr("lb.noData", lang)
