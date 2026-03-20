@@ -83,7 +83,7 @@ export const t: Record<string, Record<Lang, string>> = {
   "team.winPct":       { ko: "승률",   en: "Win%" },
   "team.gb":           { ko: "GB",     en: "GB" },
   "team.streak":       { ko: "연속",   en: "Streak" },
-  "team.roster":       { ko: "주요 타자", en: "Key Hitters" },
+  "team.roster":       { ko: "주요 선수", en: "Key Players" },
   "team.schedule":     { ko: "일정 / 결과", en: "Schedule" },
   "team.h2h":          { ko: "상대 전적", en: "Head-to-Head" },
   "team.opsLeaders":   { ko: "OPS 리더", en: "OPS Leaders" },
@@ -118,7 +118,7 @@ export const t: Record<string, Record<Lang, string>> = {
   "lb.ops":        { ko: "OPS TOP 5",  en: "OPS TOP 5" },
 
   // Standings
-  "standings.title":   { ko: "2026 시즌 순위", en: "2026 Season Standings" },
+  "standings.title":   { ko: "시즌 순위", en: "Season Standings" },
   "standings.team":    { ko: "팀",  en: "Team" },
   "standings.w":       { ko: "승",  en: "W" },
   "standings.d":       { ko: "무",  en: "D" },
