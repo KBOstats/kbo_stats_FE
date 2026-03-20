@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+
 import { usePathname, useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
@@ -65,6 +67,7 @@ export function PitcherDetailSection({ monthlyRows, selectedSeason, availableSea
   const pathname = usePathname()
   const { resolvedTheme } = useTheme()
   const { lang } = useLang()
+  const [activeIdx, setActiveIdx] = useState<number | null>(null)
 
   const isDark = resolvedTheme === "dark"
   const tickColor = isDark ? "#9ca3af" : "#64748b"
@@ -126,7 +129,7 @@ export function PitcherDetailSection({ monthlyRows, selectedSeason, availableSea
                 <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                 <XAxis dataKey="monthLabel" tick={{ fontSize: 11, fill: tickColor }} />
                 <YAxis
-                  reversed={true}
+                  reversed
                   tick={{ fontSize: 11, fill: tickColor }}
                   tickFormatter={(v) => toNumber(v).toFixed(2)}
                 />
@@ -155,7 +158,11 @@ export function PitcherDetailSection({ monthlyRows, selectedSeason, availableSea
               {lang === "ko" ? "해당 월 승리 수" : "Wins recorded that month"}
             </p>
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={chartRows} margin={{ top: 24, right: 8, bottom: 4, left: -16 }}>
+              <BarChart
+                data={chartRows}
+                margin={{ top: 24, right: 8, bottom: 4, left: -16 }}
+                onMouseLeave={() => setActiveIdx(null)}
+              >
                 <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                 <XAxis
                   dataKey="monthLabel"
@@ -164,16 +171,26 @@ export function PitcherDetailSection({ monthlyRows, selectedSeason, availableSea
                   tickLine={false}
                 />
                 <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: tickColor }} />
-                <Tooltip
-                  contentStyle={TOOLTIP_STYLE}
-                  cursor={{ fill: "var(--secondary)", opacity: 0.4 }}
-                  formatter={(value) => [value, lang === "ko" ? "승" : "W"]}
-                />
                 <Bar
                   dataKey="W"
                   fill="#f97316"
                   radius={[4, 4, 0, 0]}
                   maxBarSize={40}
+                  onMouseEnter={(_: unknown, index: number) => setActiveIdx(index)}
+                  label={({ x, y, width, value, index }: { x: number; y: number; width: number; value: number; index: number }) =>
+                    index === activeIdx ? (
+                      <text
+                        x={x + width / 2}
+                        y={y - 6}
+                        fill={labelColor}
+                        textAnchor="middle"
+                        fontSize={12}
+                        fontWeight={700}
+                      >
+                        {value}
+                      </text>
+                    ) : <text />
+                  }
                 />
               </BarChart>
             </ResponsiveContainer>
