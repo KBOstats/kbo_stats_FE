@@ -47,5 +47,5 @@ function resolveApiBaseUrl() {
   }
 
   // Server runtime fallback (for SSR and build-time execution).
-  return (API_BASE_URL || "http://127.0.0.1:8000/api").replace(/\/$/, "")
+  return (API_BASE_URL || "http://58.236.187.135:9200/api").replace(/\/$/, "")
 }

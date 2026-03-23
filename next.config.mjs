@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const DJANGO_API_URL = process.env.DJANGO_API_URL || "http://127.0.0.1:8000"
+const DJANGO_API_URL = process.env.DJANGO_API_URL || "http://58.236.187.135:9200"
 
 const nextConfig = {
   typescript: {
