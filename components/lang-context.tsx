@@ -63,7 +63,7 @@ export const t: Record<string, Record<Lang, string>> = {
   "home.footer":       { ko: "KBOstats - KBO 데이터 분석 플랫폼", en: "KBOstats - KBO data analysis platform" },
   "home.glossary":     { ko: "용어집",    en: "Glossary" },
   "home.dataSources":  { ko: "데이터 출처", en: "Data Sources" },
-  "home.reportIssue":  { ko: "오류 제보", en: "Report Issue" },
+  "home.reportIssue":  { ko: "문의사항", en: "Inquiry" },
 
   // Players page
   "players.title":       { ko: "선수",               en: "Players" },
@@ -204,12 +204,12 @@ export const t: Record<string, Record<Lang, string>> = {
   "report.issueType.other":  { ko: "기타 건의사항", en: "Other" },
 
   "report.message":          { ko: "상세 내용",   en: "Details" },
-  "report.messagePlaceholder":{ ko: "오류 내용을 상세히 적어주시면 수정에 큰 도움이 됩니다.", en: "Please describe the issue in detail." },
+  "report.messagePlaceholder":{ ko: "문의 내용을 상세히 적어주시면 사이트 개선에 큰 도움이 됩니다.", en: "Please describe your inquiry in detail." },
   
   "report.success":          { ko: "성공적으로 접수되었습니다. 감사합니다!", en: "Report submitted successfully. Thank you!" },
   "report.fail":             { ko: "전송에 실패했습니다. 잠시 후 다시 시도해주세요.", en: "Failed to submit. Please try again later." },
   "report.cancel":           { ko: "취소",        en: "Cancel" },
-  "report.submit":           { ko: "제보하기",    en: "Submit" },
+  "report.submit":           { ko: "문의하기",    en: "Submit" },
   "report.submitting":       { ko: "전송 중...",  en: "Submitting..." },
 }
 
