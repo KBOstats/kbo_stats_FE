@@ -334,22 +334,30 @@ export default function TeamPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {(teamDetailQuery.data?.leaders.ops_top10 ?? []).map((row, idx) => (
-                        <TableRow key={`${row.player_name}-${idx}`} className="border-border">
-                          <TableCell className="text-sm">
-                            <Link
-                              href={`/player/${encodeURIComponent(row.player_name)}?player_type=hitter`}
-                              className="hover:text-primary hover:underline"
-                            >
-                              {formatPlayerName(row.player_name, lang)}
-                            </Link>
+                      {(teamDetailQuery.data?.leaders.ops_top10 ?? []).length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                            {lang === "en" ? "No data available." : "데이터가 없습니다."}
                           </TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.PA}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{Number(row.OPS || 0).toFixed(3)}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.HR}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.RBI}</TableCell>
                         </TableRow>
-                      ))}
+                      ) : (
+                        (teamDetailQuery.data?.leaders.ops_top10 ?? []).map((row, idx) => (
+                          <TableRow key={`${row.player_name}-${idx}`} className="border-border">
+                            <TableCell className="text-sm">
+                              <Link
+                                href={`/player/${encodeURIComponent(row.player_name)}?player_type=hitter`}
+                                className="hover:text-primary hover:underline"
+                              >
+                                {formatPlayerName(row.player_name, lang)}
+                              </Link>
+                            </TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.PA}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{Number(row.OPS || 0).toFixed(3)}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.HR}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.RBI}</TableCell>
+                          </TableRow>
+                        ))
+                      )}
                     </TableBody>
                   </Table>
                 </div>
@@ -369,22 +377,30 @@ export default function TeamPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {(teamDetailQuery.data?.leaders.hr_top10 ?? []).map((row, idx) => (
-                        <TableRow key={`${row.player_name}-${idx}`} className="border-border">
-                          <TableCell className="text-sm">
-                            <Link
-                              href={`/player/${encodeURIComponent(row.player_name)}?player_type=hitter`}
-                              className="hover:text-primary hover:underline"
-                            >
-                              {formatPlayerName(row.player_name, lang)}
-                            </Link>
+                      {(teamDetailQuery.data?.leaders.hr_top10 ?? []).length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                            {lang === "en" ? "No data available." : "데이터가 없습니다."}
                           </TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.PA}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.HR}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.RBI}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{Number(row.OPS || 0).toFixed(3)}</TableCell>
                         </TableRow>
-                      ))}
+                      ) : (
+                        (teamDetailQuery.data?.leaders.hr_top10 ?? []).map((row, idx) => (
+                          <TableRow key={`${row.player_name}-${idx}`} className="border-border">
+                            <TableCell className="text-sm">
+                              <Link
+                                href={`/player/${encodeURIComponent(row.player_name)}?player_type=hitter`}
+                                className="hover:text-primary hover:underline"
+                              >
+                                {formatPlayerName(row.player_name, lang)}
+                              </Link>
+                            </TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.PA}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.HR}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.RBI}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{Number(row.OPS || 0).toFixed(3)}</TableCell>
+                          </TableRow>
+                        ))
+                      )}
                     </TableBody>
                   </Table>
                 </div>
@@ -409,23 +425,31 @@ export default function TeamPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {(teamDetailQuery.data?.leaders.era_top10 ?? []).map((row, idx) => (
-                        <TableRow key={`era-${row.player_name}-${idx}`} className="border-border">
-                          <TableCell className="text-sm">
-                            <Link
-                              href={`/player/${encodeURIComponent(row.player_name)}?player_type=pitcher`}
-                              className="hover:text-primary hover:underline"
-                            >
-                              {formatPlayerName(row.player_name, lang)}
-                            </Link>
+                      {(teamDetailQuery.data?.leaders.era_top10 ?? []).length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                            {lang === "en" ? "No data available." : "데이터가 없습니다."}
                           </TableCell>
-                          <TableCell className="text-center text-sm font-mono">{Number(row.IP || 0).toFixed(1)}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.W}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.L}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.SV}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{Number(row.ERA || 0).toFixed(2)}</TableCell>
                         </TableRow>
-                      ))}
+                      ) : (
+                        (teamDetailQuery.data?.leaders.era_top10 ?? []).map((row, idx) => (
+                          <TableRow key={`era-${row.player_name}-${idx}`} className="border-border">
+                            <TableCell className="text-sm">
+                              <Link
+                                href={`/player/${encodeURIComponent(row.player_name)}?player_type=pitcher`}
+                                className="hover:text-primary hover:underline"
+                              >
+                                {formatPlayerName(row.player_name, lang)}
+                              </Link>
+                            </TableCell>
+                            <TableCell className="text-center text-sm font-mono">{Number(row.IP || 0).toFixed(1)}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.W}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.L}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.SV}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{Number(row.ERA || 0).toFixed(2)}</TableCell>
+                          </TableRow>
+                        ))
+                      )}
                     </TableBody>
                   </Table>
                 </div>
@@ -450,23 +474,31 @@ export default function TeamPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {(teamDetailQuery.data?.leaders.k9_top10 ?? []).map((row, idx) => (
-                        <TableRow key={`k9-${row.player_name}-${idx}`} className="border-border">
-                          <TableCell className="text-sm">
-                            <Link
-                              href={`/player/${encodeURIComponent(row.player_name)}?player_type=pitcher`}
-                              className="hover:text-primary hover:underline"
-                            >
-                              {formatPlayerName(row.player_name, lang)}
-                            </Link>
+                      {(teamDetailQuery.data?.leaders.k9_top10 ?? []).length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                            {lang === "en" ? "No data available." : "데이터가 없습니다."}
                           </TableCell>
-                          <TableCell className="text-center text-sm font-mono">{Number(row.IP || 0).toFixed(1)}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.W}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.L}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{row.SV}</TableCell>
-                          <TableCell className="text-center text-sm font-mono">{Number(row.K9 || 0).toFixed(2)}</TableCell>
                         </TableRow>
-                      ))}
+                      ) : (
+                        (teamDetailQuery.data?.leaders.k9_top10 ?? []).map((row, idx) => (
+                          <TableRow key={`k9-${row.player_name}-${idx}`} className="border-border">
+                            <TableCell className="text-sm">
+                              <Link
+                                href={`/player/${encodeURIComponent(row.player_name)}?player_type=pitcher`}
+                                className="hover:text-primary hover:underline"
+                              >
+                                {formatPlayerName(row.player_name, lang)}
+                              </Link>
+                            </TableCell>
+                            <TableCell className="text-center text-sm font-mono">{Number(row.IP || 0).toFixed(1)}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.W}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.L}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{row.SV}</TableCell>
+                            <TableCell className="text-center text-sm font-mono">{Number(row.K9 || 0).toFixed(2)}</TableCell>
+                          </TableRow>
+                        ))
+                      )}
                     </TableBody>
                   </Table>
                 </div>
@@ -514,24 +546,32 @@ export default function TeamPage() {
                     </TableRow>
                   </TableHeader>
                    <TableBody>
-                     {[...(teamDetailQuery.data?.h2h ?? [])].sort((a, b) => {
-                       if (b.wins !== a.wins) return b.wins - a.wins
-                       return a.opp_team.localeCompare(b.opp_team, "ko")
-                     }).map((row) => {
-                       const total = row.wins + row.losses
-                       const pct = total > 0 ? (row.wins / total).toFixed(3) : "-"
-                       return (
-                         <TableRow key={row.opp_team} className="border-border">
-                           <TableCell className="text-sm">{row.opp_team}</TableCell>
-                           <TableCell className="text-center text-sm font-mono">{row.wins}</TableCell>
-                           <TableCell className="text-center text-sm font-mono">{row.losses}</TableCell>
-                           <TableCell className="text-center text-sm font-mono">{row.draws}</TableCell>
-                           <TableCell className="text-center text-sm font-mono">{row.runs_for}</TableCell>
-                           <TableCell className="text-center text-sm font-mono">{row.runs_against}</TableCell>
-                           <TableCell className="text-center text-sm font-mono">{pct}</TableCell>
-                         </TableRow>
-                       )
-                     })}
+                     {(teamDetailQuery.data?.h2h ?? []).length === 0 ? (
+                       <TableRow>
+                         <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                           {lang === "en" ? "No data available." : "데이터가 없습니다."}
+                         </TableCell>
+                       </TableRow>
+                     ) : (
+                       [...(teamDetailQuery.data?.h2h ?? [])].sort((a, b) => {
+                         if (b.wins !== a.wins) return b.wins - a.wins
+                         return a.opp_team.localeCompare(b.opp_team, "ko")
+                       }).map((row) => {
+                         const total = row.wins + row.losses
+                         const pct = total > 0 ? (row.wins / total).toFixed(3) : "-"
+                         return (
+                           <TableRow key={row.opp_team} className="border-border">
+                             <TableCell className="text-sm">{row.opp_team}</TableCell>
+                             <TableCell className="text-center text-sm font-mono">{row.wins}</TableCell>
+                             <TableCell className="text-center text-sm font-mono">{row.losses}</TableCell>
+                             <TableCell className="text-center text-sm font-mono">{row.draws}</TableCell>
+                             <TableCell className="text-center text-sm font-mono">{row.runs_for}</TableCell>
+                             <TableCell className="text-center text-sm font-mono">{row.runs_against}</TableCell>
+                             <TableCell className="text-center text-sm font-mono">{pct}</TableCell>
+                           </TableRow>
+                         )
+                       })
+                     )}
                    </TableBody>
                 </Table>
               </div>
