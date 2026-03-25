@@ -64,30 +64,38 @@ export function StandingsTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((team) => (
-            <TableRow key={`${team.rank}-${team.team}`} className="border-border transition-colors hover:bg-secondary/50">
-              <TableCell className="text-center text-xs font-mono text-muted-foreground">{team.rank}</TableCell>
-              <TableCell className="text-sm font-medium">
-                <Link
-                  href={`/team?team=${encodeURIComponent(team.team)}`}
-                  className="text-foreground hover:text-primary hover:underline underline-offset-2 transition-colors"
-                >
-                  {formatTeamName(team.team, lang)}
-                </Link>
+          {rows.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
+                {lang === "en" ? "No scheduled games." : "데이터가 없습니다."}
               </TableCell>
-              <TableCell className="text-center text-sm font-mono text-foreground">{team.wins}</TableCell>
-              <TableCell className="text-center text-sm font-mono text-muted-foreground">{team.draws}</TableCell>
-              <TableCell className="text-center text-sm font-mono text-foreground">{team.losses}</TableCell>
-              <TableCell className="text-center text-sm font-mono font-semibold text-foreground">
-                {typeof team.win_pct === "number" ? team.win_pct.toFixed(3) : team.win_pct}
-              </TableCell>
-              <TableCell className="text-center text-sm font-mono text-muted-foreground">{team.gb ?? "-"}</TableCell>
-              <TableCell className="hidden text-center text-xs font-mono sm:table-cell">
-                {localizeStreak(team.streak, lang)}
-              </TableCell>
-              <TableCell className="hidden text-center text-xs font-mono text-muted-foreground md:table-cell">{team.recent_10 ?? "-"}</TableCell>
             </TableRow>
-          ))}
+          ) : (
+            rows.map((team) => (
+              <TableRow key={`${team.rank}-${team.team}`} className="border-border transition-colors hover:bg-secondary/50">
+                <TableCell className="text-center text-xs font-mono text-muted-foreground">{team.rank}</TableCell>
+                <TableCell className="text-sm font-medium">
+                  <Link
+                    href={`/team?team=${encodeURIComponent(team.team)}`}
+                    className="text-foreground hover:text-primary hover:underline underline-offset-2 transition-colors"
+                  >
+                    {formatTeamName(team.team, lang)}
+                  </Link>
+                </TableCell>
+                <TableCell className="text-center text-sm font-mono text-foreground">{team.wins}</TableCell>
+                <TableCell className="text-center text-sm font-mono text-muted-foreground">{team.draws}</TableCell>
+                <TableCell className="text-center text-sm font-mono text-foreground">{team.losses}</TableCell>
+                <TableCell className="text-center text-sm font-mono font-semibold text-foreground">
+                  {typeof team.win_pct === "number" ? team.win_pct.toFixed(3) : team.win_pct}
+                </TableCell>
+                <TableCell className="text-center text-sm font-mono text-muted-foreground">{team.gb ?? "-"}</TableCell>
+                <TableCell className="hidden text-center text-xs font-mono sm:table-cell">
+                  {localizeStreak(team.streak, lang)}
+                </TableCell>
+                <TableCell className="hidden text-center text-xs font-mono text-muted-foreground md:table-cell">{team.recent_10 ?? "-"}</TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>
