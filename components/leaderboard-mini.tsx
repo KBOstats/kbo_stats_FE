@@ -53,11 +53,11 @@ function LeaderCard({
         {icon}
         <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       </div>
-      <div className="divide-y divide-border">
+      <div className="flex-1 flex flex-col divide-y divide-border">
         {items.length === 0 && <div className="px-4 py-3 text-xs text-muted-foreground">{noDataText}</div>}
         {items.map((item) => {
           const inner = (
-            <div className="flex w-full items-center gap-3 px-4 py-2.5">
+            <div className="flex-1 flex w-full items-center gap-3 px-4 py-2.5">
               <span className="w-5 text-center text-xs font-mono font-bold">{item.rank}</span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
@@ -66,7 +66,7 @@ function LeaderCard({
                   </span>
                   <span className="text-xs text-muted-foreground">{item.team}</span>
                 </div>
-                <p className="text-xs text-muted-foreground">{item.sub || "\u00A0"}</p>
+                {item.sub && <p className="text-xs text-muted-foreground">{item.sub}</p>}
               </div>
               <span className="text-sm font-mono font-bold text-primary">{item.value}</span>
             </div>
