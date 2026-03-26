@@ -21,8 +21,9 @@ const JONG: Record<string, string> = {
   "ㅇ": "ng", "ㅈ": "t", "ㅊ": "t", "ㅋ": "k", "ㅌ": "t", "ㅍ": "p", "ㅎ": "t"
 };
 
-// Hardcoded prominent KBO players for common exceptions
+// Hardcoded KBO player name exceptions (foreign players sourced from DB)
 const EXCEPTIONS: Record<string, string> = {
+  // Korean players (irregular romanization)
   "김도영": "Kim Do-yeong",
   "구자욱": "Koo Ja-wook",
   "최정": "Choi Jeong",
@@ -30,16 +31,54 @@ const EXCEPTIONS: Record<string, string> = {
   "류현진": "Ryu Hyun-jin",
   "양의지": "Yang Eui-ji",
   "박병호": "Park Byung-ho",
-  "에레디아": "Heredia",
-  "소크라테스": "Socrates",
-  "데이비슨": "Davidson",
-  "오스틴": "Austin",
-  "로하스": "Rojas",
   "구본혁": "Koo Bon-hyeok",
   "강백호": "Kang Baek-ho",
+  // Foreign players (all confirmed in DB)
+  "가라비토": "Garabito",
+  "감보아": "Gamboa",
+  "네일": "Neil",
+  "데이비슨": "Davidson",
+  "디아즈": "Diaz",
+  "라일리": "Riley",
+  "레예스": "Reyes",
+  "레이예스": "Reyes",
+  "로건": "Logan",
+  "로젠버그": "Rosenberg",
+  "로하스": "Rojas",
+  "리베라토": "Liberato",
+  "맥브룸": "McBroom",
+  "메르세데스": "Mercedes",
+  "반즈": "Barnes",
+  "벨라스케즈": "Velasquez",
+  "소크라테스": "Socrates",
+  "스톤": "Stone",
+  "스티븐슨": "Stevenson",
+  "알칸타라": "Alcantara",
+  "앤더슨": "Anderson",
+  "에레디아": "Heredia",
+  "에르난데스": "Hernandez",
+  "오스틴": "Austin",
+  "올러": "Oller",
+  "와이스": "Weiss",
+  "웰스": "Wells",
+  "위즈덤": "Wisdom",
+  "잭로그": "Logue",
+  "치리노스": "Chirinos",
+  "카디네스": "Cardines",
+  "케이브": "Cave",
+  "윈": "Wijn",        // 코엔 윈 → compact → 윈
+  "콜어빈": "Irvin",
+  "쿠에바스": "Cuevas",
+  "톨허스트": "Tolhurst",
+  "패트릭": "Patrick",
   "페라자": "Peraza",
   "도슨": "Dawson",
-  "레이예스": "Reyes",
+  "폰세": "Ponce",
+  "푸이그": "Puig",
+  "플로리얼": "Florial",
+  "헤이수스": "Jesus",
+  "화이트": "White",
+  "후라도": "Jurado",
   // Teams
   "기아": "KIA",
   "두산": "Doosan",
@@ -52,20 +91,15 @@ const EXCEPTIONS: Record<string, string> = {
 export function romanizeKorean(text: string): string {
   if (!text) return "";
   
-  // Check exact exceptions first
   if (EXCEPTIONS[text]) return EXCEPTIONS[text];
   
-  // Try to romanize each character
   let result = "";
-  let isFirstChar = true;
 
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
     const code = char.charCodeAt(0);
 
-    // If not a Korean syllable, leave it
     if (code < 0xAC00 || code > 0xD7A3) {
-      if (char !== ' ') isFirstChar = true;
       result += char;
       continue;
     }
@@ -81,7 +115,6 @@ export function romanizeKorean(text: string): string {
 
     let syl = "";
     
-    // First character special rules (e.g. 김 -> Kim not Gim, 박 -> Park not Bak)
     if (i === 0) {
       if (char === "김") syl = "Kim";
       else if (char === "이") syl = "Lee";
@@ -95,13 +128,11 @@ export function romanizeKorean(text: string): string {
       else if (char === "임") syl = "Lim";
       else syl = CHO[choStr] + JUNG[jungStr] + JONG[jongStr];
       
-      // Capitalize first letter if not already done
       if (syl.length > 0 && syl[0] === syl[0].toLowerCase()) {
         syl = syl.charAt(0).toUpperCase() + syl.slice(1);
       }
     } else {
       syl = CHO[choStr] + JUNG[jungStr] + JONG[jongStr];
-      // Add hyphen between given names
       if (text.length === 3 && i === 1) {
         syl = " " + syl.charAt(0).toUpperCase() + syl.slice(1);
       } else if (text.length === 3 && i === 2) {
@@ -110,7 +141,6 @@ export function romanizeKorean(text: string): string {
     }
     
     result += syl;
-    isFirstChar = false;
   }
 
   return result;
@@ -132,7 +162,6 @@ export function formatPlayerName(name: string, lang: "ko" | "en"): string {
 export function formatTeamName(team: string, lang: "ko" | "en"): string {
   if (lang === "ko") return team;
   
-  // Handle team names that are Korean
   const teamExceptions: Record<string, string> = {
     "두산": "Doosan",
     "롯데": "Lotte",
