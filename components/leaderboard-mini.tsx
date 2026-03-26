@@ -66,7 +66,7 @@ function LeaderCard({
                   </span>
                   <span className="text-xs text-muted-foreground">{item.team}</span>
                 </div>
-                {item.sub && <p className="text-xs text-muted-foreground">{item.sub}</p>}
+                <p className="text-xs text-muted-foreground">{item.sub || "\u00A0"}</p>
               </div>
               <span className="text-sm font-mono font-bold text-primary">{item.value}</span>
             </div>
