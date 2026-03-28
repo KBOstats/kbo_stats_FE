@@ -155,9 +155,15 @@ export default function TeamPage() {
 
   const effectiveSeason = standingsQuery.data?.effective_season ?? Number(requestedSeason)
   const standingsTeams = standingsQuery.data?.rows ?? []
-  // DB에 데이터가 있는 시즌만 표시. standings 로드 전에는 현재 연도 하나만 보여줌
-  const seasonOptions = standingsQuery.data?.available_seasons?.map(String)
-    ?? [String(Number(requestedSeason))]
+  // Always include requestedSeason in the dropdown even if DB has no data yet (e.g. opening day)
+  const rawAvailable = standingsQuery.data?.available_seasons?.map(String) ?? []
+  const seasonOptions = rawAvailable.includes(requestedSeason)
+    ? rawAvailable
+    : [requestedSeason, ...rawAvailable]
+  // True when user selected the new season but DB hasn't been populated yet
+  const isNewSeasonNoData =
+    Number(requestedSeason) > effectiveSeason &&
+    !standingsQuery.isLoading
   const teams = standingsTeams.length
     ? standingsTeams.map((row) => row.team)
     : [...TEAM_OPTIONS]
@@ -269,6 +275,17 @@ export default function TeamPage() {
         ) : standingsQuery.isError ? (
           <div className="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
             {tr("standings.loadError", lang)}
+          </div>
+        ) : isNewSeasonNoData ? (
+          <div className="mb-6 rounded-lg border border-primary/30 bg-primary/5 px-4 py-5 text-center">
+            <p className="text-sm font-semibold text-primary">
+              🎉 {requestedSeason}{lang === "ko" ? " 시즌 개막!" : " Season Opening!"}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {lang === "ko"
+                ? "경기 데이터를 수집하는 중입니다. 경기 종료 후 업데이트됩니다."
+                : "Collecting game data. Stats will be updated after games finish."}
+            </p>
           </div>
         ) : (
           <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
