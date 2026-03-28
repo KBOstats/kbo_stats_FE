@@ -37,17 +37,30 @@ function localizeStreak(streak: string | null | undefined, lang: "ko" | "en"): s
 export function StandingsTable({
   rows,
   asOfDate,
+  currentSeason,
 }: {
   rows: StandingRow[]
   asOfDate: string | null
+  currentSeason?: number
 }) {
   const { lang } = useLang()
+
+  // On opening day, asOfDate is still from last season → show 준비중
+  const isStale =
+    currentSeason != null &&
+    asOfDate != null &&
+    !asOfDate.startsWith(String(currentSeason))
+
+  const KBO_TEAMS = ["KIA","삼성","LG","두산","KT","SSG","롯데","한화","NC","키움"]
 
   return (
     <div className="rounded-lg border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h2 className="text-sm font-semibold text-foreground">{tr("standings.title", lang)}</h2>
-        <span className="font-mono text-xs text-muted-foreground">{asOfDate ?? "-"}</span>
+        <h2 className="text-sm font-semibold text-foreground">
+          {tr("standings.title", lang)}
+          {currentSeason ? <span className="ml-1.5 text-xs text-muted-foreground font-normal">({currentSeason})</span> : null}
+        </h2>
+        <span className="font-mono text-xs text-muted-foreground">{isStale ? "-" : (asOfDate ?? "-")}</span>
       </div>
       <Table>
         <TableHeader>
@@ -64,7 +77,25 @@ export function StandingsTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.length === 0 ? (
+          {isStale ? (
+            KBO_TEAMS.map((team) => (
+              <TableRow key={team} className="border-border transition-colors hover:bg-secondary/50">
+                <TableCell className="text-center text-xs font-mono text-muted-foreground">-</TableCell>
+                <TableCell className="text-sm font-medium">
+                  <Link href={`/team?team=${encodeURIComponent(team)}`} className="text-foreground hover:text-primary hover:underline underline-offset-2 transition-colors">
+                    {formatTeamName(team, lang)}
+                  </Link>
+                </TableCell>
+                <TableCell className="text-center text-sm font-mono text-primary">0</TableCell>
+                <TableCell className="text-center text-sm font-mono text-muted-foreground">0</TableCell>
+                <TableCell className="text-center text-sm font-mono text-primary">0</TableCell>
+                <TableCell className="text-center text-sm font-mono text-muted-foreground">-</TableCell>
+                <TableCell className="text-center text-sm font-mono text-muted-foreground">-</TableCell>
+                <TableCell className="hidden text-center text-xs font-mono text-muted-foreground sm:table-cell">-</TableCell>
+                <TableCell className="hidden text-center text-xs font-mono text-muted-foreground md:table-cell">-</TableCell>
+              </TableRow>
+            ))
+          ) : rows.length === 0 ? (
             <TableRow>
               <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
                 {lang === "en" ? "No scheduled games." : "데이터가 없습니다."}
