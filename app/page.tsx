@@ -29,9 +29,11 @@ type GamesResponse = {
   rows: {
     game_id: string
     away_team: string
-    away_score: number
+    away_score: number | null
     home_team: string
-    home_score: number
+    home_score: number | null
+    status?: string
+    game_time?: string | null
   }[]
 }
 
@@ -88,7 +90,17 @@ type HomeSummaryResponse = {
 export default async function HomePage() {
   const season = getDefaultSeasonYearByKst()
   const now = new Date()
-  const yyyymmdd = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`
+  // Use KST (Asia/Seoul) to avoid off-by-one before 9AM KST on Vercel (UTC)
+  const kstParts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now).reduce<Record<string, string>>((acc, p) => {
+    if (p.type !== "literal") acc[p.type] = p.value
+    return acc
+  }, {})
+  const yyyymmdd = `${kstParts.year}${kstParts.month}${kstParts.day}`
 
   let standings: StandingsResponse = { as_of_date: null, rows: [] }
   let games: GamesResponse = { date: null, rows: [] }

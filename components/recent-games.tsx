@@ -6,9 +6,11 @@ import { formatTeamName } from "@/lib/romanize"
 type GameRow = {
   game_id: string
   away_team: string
-  away_score: number
+  away_score: number | null
   home_team: string
-  home_score: number
+  home_score: number | null
+  status?: string
+  game_time?: string | null
 }
 
 export function RecentGames({
@@ -33,17 +35,26 @@ export function RecentGames({
           </div>
         ) : (
           rows.map((game) => {
-            const homeWin = game.home_score > game.away_score
-            const awayWin = game.away_score > game.home_score
+            const isScheduled = game.status === "scheduled" || game.away_score === null
+            const homeWin = !isScheduled && (game.home_score ?? 0) > (game.away_score ?? 0)
+            const awayWin = !isScheduled && (game.away_score ?? 0) > (game.home_score ?? 0)
             return (
               <div key={game.game_id} className="flex items-center gap-3 px-4 py-3 hover:bg-secondary/50">
                 <div className="flex flex-1 justify-end">
                   <span className={`text-sm font-medium ${awayWin ? "text-foreground" : "text-muted-foreground"}`}>{formatTeamName(game.away_team, lang)}</span>
                 </div>
-                <div className="flex items-center gap-1.5 rounded-md bg-secondary px-3 py-1">
-                  <span className={`text-base font-mono font-bold ${awayWin ? "text-foreground" : "text-muted-foreground"}`}>{game.away_score}</span>
-                  <span className="text-xs text-muted-foreground">:</span>
-                  <span className={`text-base font-mono font-bold ${homeWin ? "text-foreground" : "text-muted-foreground"}`}>{game.home_score}</span>
+                <div className="flex items-center gap-1.5 rounded-md bg-secondary px-3 py-1 min-w-[4rem] justify-center">
+                  {isScheduled ? (
+                    <span className="text-xs font-mono text-muted-foreground">
+                      {game.game_time ? game.game_time.slice(0, 5) : lang === "ko" ? "예정" : "TBD"}
+                    </span>
+                  ) : (
+                    <>
+                      <span className={`text-base font-mono font-bold ${awayWin ? "text-foreground" : "text-muted-foreground"}`}>{game.away_score}</span>
+                      <span className="text-xs text-muted-foreground">:</span>
+                      <span className={`text-base font-mono font-bold ${homeWin ? "text-foreground" : "text-muted-foreground"}`}>{game.home_score}</span>
+                    </>
+                  )}
                 </div>
                 <div className="flex flex-1">
                   <span className={`text-sm font-medium ${homeWin ? "text-foreground" : "text-muted-foreground"}`}>{formatTeamName(game.home_team, lang)}</span>

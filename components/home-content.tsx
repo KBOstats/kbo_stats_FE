@@ -26,9 +26,11 @@ type GamesResponse = {
   rows: {
     game_id: string
     away_team: string
-    away_score: number
+    away_score: number | null
     home_team: string
-    home_score: number
+    home_score: number | null
+    status?: string
+    game_time?: string | null
   }[]
 }
 
