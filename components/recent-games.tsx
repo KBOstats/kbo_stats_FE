@@ -39,25 +39,35 @@ export function RecentGames({
             const homeWin = !isScheduled && (game.home_score ?? 0) > (game.away_score ?? 0)
             const awayWin = !isScheduled && (game.away_score ?? 0) > (game.home_score ?? 0)
             return (
-              <div key={game.game_id} className="flex items-center gap-3 px-4 py-3 hover:bg-secondary/50">
+              <div key={game.game_id} className="flex items-center gap-2 px-4 py-2.5 hover:bg-secondary/50">
+                {/* Away team */}
                 <div className="flex flex-1 justify-end">
-                  <span className={`text-sm font-medium ${awayWin ? "text-foreground" : "text-muted-foreground"}`}>{formatTeamName(game.away_team, lang)}</span>
+                  <span className={`text-sm font-semibold ${!isScheduled && !awayWin ? "text-muted-foreground font-normal" : "text-foreground"}`}>
+                    {formatTeamName(game.away_team, lang)}
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 rounded-md bg-secondary px-3 py-1 min-w-[4rem] justify-center">
-                  {isScheduled ? (
-                    <span className="text-xs font-mono text-muted-foreground">
+
+                {/* Center: score or time */}
+                {isScheduled ? (
+                  <div className="flex flex-col items-center gap-0.5 min-w-[3.5rem]">
+                    <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-mono font-semibold text-primary">
                       {game.game_time ? game.game_time.slice(0, 5) : lang === "ko" ? "예정" : "TBD"}
                     </span>
-                  ) : (
-                    <>
-                      <span className={`text-base font-mono font-bold ${awayWin ? "text-foreground" : "text-muted-foreground"}`}>{game.away_score}</span>
-                      <span className="text-xs text-muted-foreground">:</span>
-                      <span className={`text-base font-mono font-bold ${homeWin ? "text-foreground" : "text-muted-foreground"}`}>{game.home_score}</span>
-                    </>
-                  )}
-                </div>
+                    <span className="text-[10px] text-muted-foreground">{lang === "ko" ? "예정" : "Scheduled"}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 min-w-[4rem] justify-center">
+                    <span className={`text-base font-mono font-bold ${awayWin ? "text-foreground" : "text-muted-foreground"}`}>{game.away_score}</span>
+                    <span className="text-xs text-muted-foreground">:</span>
+                    <span className={`text-base font-mono font-bold ${homeWin ? "text-foreground" : "text-muted-foreground"}`}>{game.home_score}</span>
+                  </div>
+                )}
+
+                {/* Home team */}
                 <div className="flex flex-1">
-                  <span className={`text-sm font-medium ${homeWin ? "text-foreground" : "text-muted-foreground"}`}>{formatTeamName(game.home_team, lang)}</span>
+                  <span className={`text-sm font-semibold ${!isScheduled && !homeWin ? "text-muted-foreground font-normal" : "text-foreground"}`}>
+                    {formatTeamName(game.home_team, lang)}
+                  </span>
                 </div>
               </div>
             )
