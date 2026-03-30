@@ -1,10 +1,51 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Activity } from "lucide-react"
 import { useLang, tr } from "@/components/lang-context"
 import { StandingsTable } from "@/components/standings-table"
 import { LeaderboardMini } from "@/components/leaderboard-mini"
 import { RecentGames } from "@/components/recent-games"
+
+function AnimatedNumber({ value }: { value: number }) {
+  const [display, setDisplay] = useState(0)
+
+  useEffect(() => {
+    let start = 0
+    const end = value
+    if (start === end) {
+      setDisplay(end)
+      return
+    }
+
+    const duration = 1500 // 1.5초 애니메이션
+    let startTime: number | null = null
+
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp
+      const progress = Math.min((timestamp - startTime) / duration, 1)
+      const ease = 1 - Math.pow(1 - progress, 3) // easeOutCubic
+      
+      setDisplay(Math.floor(start + ease * (end - start)))
+      
+      if (progress < 1) {
+        requestAnimationFrame(step)
+      } else {
+        setDisplay(end)
+      }
+    }
+    requestAnimationFrame(step)
+  }, [value])
+
+  const formatter = new Intl.NumberFormat('en-US', { 
+    notation: "compact", 
+    compactDisplay: "short",
+    maximumFractionDigits: 1 
+  })
+
+  // 1.2K 가 아닌 1.2k 로 표기
+  return <>{formatter.format(display).toLowerCase()}</>
+}
 
 type StandingsResponse = {
   as_of_date: string | null
@@ -81,11 +122,15 @@ export function HomeContent({
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-secondary px-4 py-2 text-center">
               <p className="text-xs text-muted-foreground">{tr("home.games", lang)}</p>
-              <p className="text-xl font-mono font-bold text-foreground">{summary.totals?.total_games ?? 0}</p>
+              <p className="text-xl font-mono font-bold text-foreground">
+                <AnimatedNumber value={summary.totals?.total_games ?? 0} />
+              </p>
             </div>
             <div className="rounded-lg bg-secondary px-4 py-2 text-center">
               <p className="text-xs text-muted-foreground">{tr("home.players", lang)}</p>
-              <p className="text-xl font-mono font-bold text-foreground">{summary.totals?.players ?? 0}</p>
+              <p className="text-xl font-mono font-bold text-foreground">
+                <AnimatedNumber value={summary.totals?.players ?? 0} />
+              </p>
             </div>
           </div>
         </div>
@@ -104,3 +149,4 @@ export function HomeContent({
     </main>
   )
 }
+

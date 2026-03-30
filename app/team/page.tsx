@@ -359,7 +359,7 @@ export default function TeamPage() {
                           <TableRow key={`${row.player_name}-${idx}`} className="border-border">
                             <TableCell className="text-sm">
                               <Link
-                                href={`/player/${encodeURIComponent(row.player_name)}?player_type=hitter`}
+                                href={`/player/${encodeURIComponent(`${row.player_name}_${selectedTeam}`)}?player_type=hitter`}
                                 className="hover:text-primary hover:underline"
                               >
                                 {formatPlayerName(row.player_name, lang)}
@@ -402,7 +402,7 @@ export default function TeamPage() {
                           <TableRow key={`${row.player_name}-${idx}`} className="border-border">
                             <TableCell className="text-sm">
                               <Link
-                                href={`/player/${encodeURIComponent(row.player_name)}?player_type=hitter`}
+                                href={`/player/${encodeURIComponent(`${row.player_name}_${selectedTeam}`)}?player_type=hitter`}
                                 className="hover:text-primary hover:underline"
                               >
                                 {formatPlayerName(row.player_name, lang)}
@@ -450,7 +450,7 @@ export default function TeamPage() {
                           <TableRow key={`era-${row.player_name}-${idx}`} className="border-border">
                             <TableCell className="text-sm">
                               <Link
-                                href={`/player/${encodeURIComponent(row.player_name)}?player_type=pitcher`}
+                                href={`/player/${encodeURIComponent(`${row.player_name}_${selectedTeam}`)}?player_type=pitcher`}
                                 className="hover:text-primary hover:underline"
                               >
                                 {formatPlayerName(row.player_name, lang)}
@@ -499,7 +499,7 @@ export default function TeamPage() {
                           <TableRow key={`k9-${row.player_name}-${idx}`} className="border-border">
                             <TableCell className="text-sm">
                               <Link
-                                href={`/player/${encodeURIComponent(row.player_name)}?player_type=pitcher`}
+                                href={`/player/${encodeURIComponent(`${row.player_name}_${selectedTeam}`)}?player_type=pitcher`}
                                 className="hover:text-primary hover:underline"
                               >
                                 {formatPlayerName(row.player_name, lang)}

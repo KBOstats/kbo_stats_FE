@@ -143,9 +143,9 @@ export function SiteHeader() {
     if (row._type === "team") {
       router.push(`/team?team=${encodeURIComponent(row.team)}`)
     } else if (row.player_type === "pitcher") {
-      router.push(`/player/${encodeURIComponent(row.player_id || row.player_name)}?player_type=pitcher`)
+      router.push(`/player/${encodeURIComponent(`${row.player_name}_${row.team}`)}?player_type=pitcher`)
     } else {
-      router.push(`/player/${encodeURIComponent(row.player_id || row.player_name)}`)
+      router.push(`/player/${encodeURIComponent(`${row.player_name}_${row.team}`)}`)
     }
   }
 

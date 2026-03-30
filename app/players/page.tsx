@@ -372,7 +372,7 @@ export default function PlayersPage() {
                 {filteredHitters.map((h) => (
                   <Link
                     key={`${h.team}-${h.player_name}`}
-                    href={`/player/${encodeURIComponent(h.player_id || h.player_name)}?season=${season}`}
+                    href={`/player/${encodeURIComponent(`${h.player_name}_${h.team}`)}?season=${season}`}
                     className="rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/40"
                   >
                     <p className="text-sm font-semibold text-foreground">{formatPlayerName(h.player_name, lang)}</p>
@@ -513,7 +513,7 @@ function HitterTable({ hitters, sortField, season, lang }: { hitters: HitterRow[
             <TableRow key={`${h.team}-${h.player_name}-${i}`} className="border-border">
               <TableCell className="text-center text-xs text-muted-foreground">{i + 1}</TableCell>
               <TableCell className="text-sm font-medium">
-                <Link href={`/player/${encodeURIComponent(h.player_id || h.player_name)}?season=${season}`} className="hover:text-primary hover:underline underline-offset-2 transition-colors">
+                <Link href={`/player/${encodeURIComponent(`${h.player_name}_${h.team}`)}?season=${season}`} className="hover:text-primary hover:underline underline-offset-2 transition-colors">
                   {formatPlayerName(h.player_name, lang)}
                 </Link>
               </TableCell>

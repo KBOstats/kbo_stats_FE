@@ -100,7 +100,7 @@ export function LeaderboardMini({ summary }: { summary: Summary }) {
     team: formatTeamName(p.team, lang),
     value: formatTo3(p.AVG),
     sub: `${p.H ?? "-"} ${tr("stat.h", lang)} / ${p.PA ?? "-"} ${tr("stat.pa", lang)}`,
-    playerHref: `/player/${encodeURIComponent(p.player_name)}`,
+    playerHref: `/player/${encodeURIComponent(`${p.player_name}_${p.team}`)}`,
   }))
 
   const hrLeaders = (summary.leaderboards.hr_top5 ?? []).map((p, i) => ({
@@ -109,7 +109,7 @@ export function LeaderboardMini({ summary }: { summary: Summary }) {
     team: formatTeamName(p.team, lang),
     value: String(p.HR ?? "-"),
     sub: `${p.RBI ?? "-"} ${tr("stat.rbi", lang)} / OPS ${formatTo3(p.OPS)}`,
-    playerHref: `/player/${encodeURIComponent(p.player_name)}`,
+    playerHref: `/player/${encodeURIComponent(`${p.player_name}_${p.team}`)}`,
   }))
 
   const eraLeaders = (summary.leaderboards.era_top5 ?? []).map((p, i) => ({
@@ -118,7 +118,7 @@ export function LeaderboardMini({ summary }: { summary: Summary }) {
     team: formatTeamName(p.team, lang),
     value: String(p.ERA ?? "-"),
     sub: p.OUTS ? `${(Number(p.OUTS) / 3).toFixed(1)} IP` : undefined,
-    playerHref: `/player/${encodeURIComponent(p.player_name)}?player_type=pitcher`,
+    playerHref: `/player/${encodeURIComponent(`${p.player_name}_${p.team}`)}?player_type=pitcher`,
   }))
 
   const warLeaders = (summary.leaderboards.war_top5 ?? []).map((p, i) => ({
@@ -132,8 +132,8 @@ export function LeaderboardMini({ summary }: { summary: Summary }) {
         : p.PA ? `${p.PA} ${tr("stat.pa", lang)}` : undefined,
     playerHref:
       p.player_type === "pitcher"
-        ? `/player/${encodeURIComponent(p.player_name)}?player_type=pitcher`
-        : `/player/${encodeURIComponent(p.player_name)}`,
+        ? `/player/${encodeURIComponent(`${p.player_name}_${p.team}`)}?player_type=pitcher`
+        : `/player/${encodeURIComponent(`${p.player_name}_${p.team}`)}`,
   }))
 
   const noDataText = tr("lb.noData", lang)
