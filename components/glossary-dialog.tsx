@@ -113,6 +113,13 @@ const pitcherTerms: GlossaryTerm[] = [
       en: "Relief pitcher. Enters after the starter, including closers.",
     },
   },
+  {
+    term: "WAR",
+    desc: {
+      ko: "대체 선수 대비 승리 기여도",
+      en: "Wins Above Replacement. A measure of a player's total contributions to their team.",
+    },
+  },
 ]
 
 const hitterTerms: GlossaryTerm[] = [
@@ -163,6 +170,13 @@ const hitterTerms: GlossaryTerm[] = [
     desc: {
       ko: "타점",
       en: "Runs batted in.",
+    },
+  },
+  {
+    term: "WAR",
+    desc: {
+      ko: "대체 선수 대비 승리 기여도",
+      en: "Wins Above Replacement. A measure of a player's total contributions to their team.",
     },
   },
 ]
