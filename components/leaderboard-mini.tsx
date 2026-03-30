@@ -154,7 +154,7 @@ export function LeaderboardMini({ summary }: { summary: Summary }) {
       />
       <LeaderCard
         title={tr("lb.era", lang)}
-        icon={<TrendingUp className="h-4 w-4 text-chart-2" />}
+        icon={<TrendingUp className="h-4 w-4 text-primary" />}
         items={eraLeaders}
         noDataText={noDataText}
       />
