@@ -181,7 +181,6 @@ export function LeaderboardMini({ summary }: { summary: Summary }) {
         icon={<TrendingUp className="h-4 w-4 text-primary" />}
         items={warLeaders}
         noDataText={noDataText}
-        href="/players"
       />
     </div>
   )
