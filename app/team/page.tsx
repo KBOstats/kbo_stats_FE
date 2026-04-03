@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { CalendarDays, Swords, Trophy, Users } from "lucide-react"
@@ -141,7 +141,7 @@ function localizeStreak(streak: string | null | undefined, lang: "ko" | "en"): s
   return streak
 }
 
-export default function TeamPage() {
+function TeamPageContent() {
   const { lang } = useLang()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -615,6 +615,14 @@ export default function TeamPage() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function TeamPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <TeamPageContent />
+    </Suspense>
   )
 }
 
