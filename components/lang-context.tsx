@@ -180,6 +180,7 @@ export const t: Record<string, Record<Lang, string>> = {
   "ai.noData":               { ko: "해당 선수의 AI 예측 데이터가 아직 없습니다.", en: "No AI prediction data available for this player." },
   "ai.asOf":                 { ko: "기준일",      en: "As of" },
   "ai.confidence":           { ko: "신뢰도",      en: "Confidence" },
+  "ai.predictedAvg":         { ko: "예측 타율",  en: "Proj. AVG" },
   "ai.predictedOps":         { ko: "예측 OPS",    en: "Proj. OPS" },
   "ai.predictedHr":          { ko: "예측 HR",     en: "Proj. HR" },
   "ai.predictedWar":         { ko: "예측 WAR",    en: "Proj. WAR" },

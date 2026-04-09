@@ -5,6 +5,7 @@ import { Brain } from "lucide-react"
 import { useLang, tr } from "@/components/lang-context"
 
 type PredictionData = {
+  predicted_avg_final?: number
   predicted_hr_final?: number
   predicted_ops_final?: number
   predicted_war_final?: number
@@ -45,6 +46,7 @@ function toPercent(value: unknown): string {
 
 function buildHitterCards(prediction: PredictionData, lang: "ko" | "en"): SummaryCard[] {
   return [
+    { key: "avg", label: tr("ai.predictedAvg", lang), value: toRate(prediction.predicted_avg_final) },
     { key: "ops", label: tr("ai.predictedOps", lang), value: toRate(prediction.predicted_ops_final) },
     { key: "hr", label: tr("ai.predictedHr", lang), value: String(Math.round(toNum(prediction.predicted_hr_final))) },
     { key: "war", label: tr("ai.predictedWar", lang), value: toNum(prediction.predicted_war_final).toFixed(1) },
