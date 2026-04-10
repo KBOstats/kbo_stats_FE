@@ -663,11 +663,20 @@ function ScheduleCalendar({
       if (!map.has(day)) map.set(day, [])
       map.get(day)!.push(row)
     }
-    // 결과가 있는 경기가 하나라도 있으면 결과 없는 항목 제거
     for (const [day, games] of map.entries()) {
       const hasFinished = games.some((g) => g.result !== null)
       if (hasFinished) {
+        // 끝난 경기가 있으면 예정 행 제거
         map.set(day, games.filter((g) => g.result !== null))
+      } else {
+        // 예정 경기만 있는 경우: 같은 상대팀 중복 제거 (opp_team 기준)
+        const seen = new Set<string>()
+        map.set(day, games.filter((g) => {
+          const key = g.opp_team ?? ""
+          if (seen.has(key)) return false
+          seen.add(key)
+          return true
+        }))
       }
     }
     return map
