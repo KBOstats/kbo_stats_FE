@@ -65,6 +65,7 @@ function buildPitcherCards(prediction: PredictionData, lang: "ko" | "en"): Summa
   return [
     { key: "era",  label: tr("ai.predictedEra",  lang), value: toRate(prediction.predicted_era_final) },
     { key: "whip", label: tr("ai.predictedWhip", lang), value: toRate(prediction.predicted_whip_final) },
+    { key: "war",  label: tr("ai.predictedWar",  lang), value: toNum(prediction.predicted_war_final).toFixed(1) },
     { key: "k9",   label: tr("ai.predictedK9",   lang), value: toRate(prediction.predicted_k9_final, 2) },
     { key: "wins", label: tr("ai.predictedWins", lang), value: String(Math.round(toNum(prediction.predicted_wins_final))) },
     { key: "so",   label: tr("ai.predictedSo",   lang), value: String(Math.round(toNum(prediction.predicted_so_final))) },

@@ -52,6 +52,7 @@ type PitcherRow = {
   K9: number
   BB9: number
   KBB: number
+  WAR?: number
 }
 
 type HitterMonthlyRow = {
@@ -127,6 +128,7 @@ type PlayerDetailResponse = {
   season_aggregate?: {
     OPS?: number
     team?: string
+    WAR?: number
   } | null
   latest_prediction?: PlayerPrediction | null
 }

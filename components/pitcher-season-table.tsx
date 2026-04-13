@@ -19,6 +19,7 @@ type PitcherRow = {
   SO?: number
   K9?: number
   BB9?: number
+  WAR?: number
 }
 
 function toIp(v: unknown) {
@@ -53,6 +54,7 @@ export function PitcherSeasonTable({ rows }: { rows: PitcherRow[] }) {
             <TableHead className="text-center">{ko ? "삼진" : "SO"}</TableHead>
             <TableHead className="text-center">K/9</TableHead>
             <TableHead className="text-center">BB/9</TableHead>
+            <TableHead className="text-center">WAR</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -71,6 +73,7 @@ export function PitcherSeasonTable({ rows }: { rows: PitcherRow[] }) {
               <TableCell className="text-center">{row.SO}</TableCell>
               <TableCell className="text-center">{toRate(row.K9, 2)}</TableCell>
               <TableCell className="text-center">{toRate(row.BB9, 2)}</TableCell>
+              <TableCell className="text-center">{toRate(row.WAR, 2)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

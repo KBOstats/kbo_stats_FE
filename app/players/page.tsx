@@ -76,6 +76,7 @@ type PitcherRow = {
   K9: number
   BB9: number
   KBB: number
+  WAR: number
 }
 
 type PitcherLeaderboardResponse = Omit<LeaderboardResponse, "rows" | "effective_min_pa" | "min_pa_policy"> & {
@@ -83,18 +84,18 @@ type PitcherLeaderboardResponse = Omit<LeaderboardResponse, "rows" | "effective_
 }
 
 const HITTER_SORT_FIELDS = ["AVG", "OPS", "H", "HR", "RBI", "OBP", "SLG"] as const
-const PITCHER_SORT_FIELDS = ["ERA", "WHIP", "K9", "SO", "W", "SV", "HLD", "IP"] as const
+const PITCHER_SORT_FIELDS = ["ERA", "WHIP", "WAR", "K9", "SO", "W", "SV", "HLD", "IP"] as const
 const TEAM_OPTIONS = ["KIA", "LG", "KT", "NC", "SSG", "두산", "롯데", "삼성", "키움", "한화"] as const
 
 const FIELD_LABEL: Record<"ko" | "en", Record<string, string>> = {
   ko: {
     AVG: "타율", OPS: "OPS", H: "안타", HR: "홈런", RBI: "타점", OBP: "출루율", SLG: "장타율",
-    ERA: "평자", WHIP: "WHIP", K9: "K/9", SO: "삼진", W: "승", SV: "세이브", HLD: "홀드", IP: "이닝",
+    ERA: "평자", WHIP: "WHIP", WAR: "WAR", K9: "K/9", SO: "삼진", W: "승", SV: "세이브", HLD: "홀드", IP: "이닝",
     games: "경기", PA: "타석", AB: "타수", role: "보직",
   },
   en: {
     AVG: "AVG", OPS: "OPS", H: "H", HR: "HR", RBI: "RBI", OBP: "OBP", SLG: "SLG",
-    ERA: "ERA", WHIP: "WHIP", K9: "K/9", SO: "SO", W: "W", SV: "SV", HLD: "HLD", IP: "IP",
+    ERA: "ERA", WHIP: "WHIP", WAR: "WAR", K9: "K/9", SO: "SO", W: "W", SV: "SV", HLD: "HLD", IP: "IP",
     games: "G", PA: "PA", AB: "AB", role: "Role",
   },
 }
@@ -103,7 +104,7 @@ const DECIMAL_METRICS = new Set(["AVG", "OBP", "SLG", "OPS"])
 const PLAYER_LIST_LIMIT = 50
 
 function formatMetric(value: number, metric: string) {
-  if (DECIMAL_METRICS.has(metric) || ["ERA", "WHIP", "K9", "BB9", "KBB"].includes(metric)) return Number(value || 0).toFixed(3)
+  if (DECIMAL_METRICS.has(metric) || ["ERA", "WHIP", "WAR", "K9", "BB9", "KBB"].includes(metric)) return Number(value || 0).toFixed(3)
   if (metric === "IP") return Number(value || 0).toFixed(1)
   return String(Math.round(Number(value || 0)))
 }
@@ -406,6 +407,7 @@ function PitcherTable({ pitchers, sortField, season, lang }: { pitchers: Pitcher
   const ALL_STAT_COLS: { key: keyof PitcherRow; label: string; decimal?: boolean }[] = [
     { key: "ERA", label: fieldLabel.ERA, decimal: true },
     { key: "WHIP", label: "WHIP", decimal: true },
+    { key: "WAR", label: "WAR", decimal: true },
     { key: "K9", label: "K/9", decimal: true },
     { key: "SO", label: fieldLabel.SO },
     { key: "W", label: fieldLabel.W },
